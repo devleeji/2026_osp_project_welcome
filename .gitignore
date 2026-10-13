@@ -1,0 +1,10 @@
+# 가상환경 폴더 제외 
+venv/
+.venv/
+env/
+
+# 파이썬 캐시 및 설정 제외
+__pycache__/
+*.pyc
+.vscode/
+.DS_Store
