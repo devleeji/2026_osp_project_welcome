@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ewha Market{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- 네비게이션 바: 모든 페이지 공통 -->
+    <nav class="navbar">
+        <a href="{{ url_for('index') }}" class="logo">Ewha Market</a>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('view_list') }}">상품 목록</a></li>
+            <li><a href="{{ url_for('view_review') }}">리뷰 목록</a></li>
+            <li><a href="{{ url_for('reg_items') }}">상품 등록</a></li>
+            <li><a href="{{ url_for('reg_reviews') }}">리뷰 등록</a></li>
+        </ul>
+    </nav>
+
+    <!-- 각 페이지 내용이 들어가는 자리 -->
+    <main class="container">
+        {% block content %}
+        <h1>어서오소! Ewha Market</h1>
+        <p>이화대동제 축제 부스의 상품을 둘러보고 구매할 수 있는 곳이에요.</p>
+        <p>위 메뉴에서 상품 목록, 리뷰 목록, 상품 등록, 리뷰 등록 페이지로 이동할 수 있어요.</p>
+        {% endblock %}
+    </main>
+</body>
+</html>
