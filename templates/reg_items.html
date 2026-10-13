@@ -3,7 +3,62 @@
 {% block title %}상품 등록 - Ewha Market{% endblock %}
 
 {% block content %}
-<h1>상품 등록</h1>
-<p>판매할 상품 정보를 입력해 등록하는 페이지입니다.</p>
-<!-- TODO(이다은): 이 페이지 내용 작성 -->
+    <h1>상품 등록</h1>
+    <p>판매할 상품 정보를 입력해 등록하는 페이지입니다.</p>
+    <form action="/result" method="POST" enctype="multipart/form-data">
+
+        <p>
+            <label for="product_name">상품명:</label>
+            <input type="text" id="product_name"
+                   name="product_name" required>
+        </p>
+
+        <p>
+            <label for="seller_id">판매자 ID:</label>
+            <input type="text" id="seller_id"
+                   name="seller_id" required>
+        </p>
+
+        <p>
+            <label for="price">가격:</label>
+            <input type="number" id="price"
+                   name="price" min="0" required>
+        </p>
+
+        <p>
+            <label for="address">주소:</label>
+            <input type="text" id="address"
+                   name="address" required>
+        </p>
+
+        <p>
+            <label for="status">상태:</label>
+            <select id="status" name="status" required>
+                <option value="">Likely Now</option>
+                <option value="지정일 예약">지정일 예약</option>
+                <option value="당일 수령 가능">당일 수령 가능</option>
+            </select>
+        </p>
+
+        <p>
+            <label for="email">이메일:</label>
+            <input type="email" id="email"
+                   name="email" required>
+        </p>
+
+        <p>
+            <label for="picture">사진 파일:</label>
+            <input type="file" id="picture"
+                   name="picture" accept="image/*" required>
+        </p>
+
+        <p>
+            <button type="submit">상품 등록</button>
+            <button type="reset">초기화</button>
+        </p>
+
+    </form>
+
+</body>
+</html>
 {% endblock %}
