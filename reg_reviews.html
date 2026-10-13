@@ -1,0 +1,52 @@
+{% extends "index.html" %}
+
+{% block title %}리뷰 등록 - Ewha Market{% endblock %}
+
+{% block content %}
+<h1>리뷰 등록</h1>
+<p>구매한 상품에 대한 리뷰를 작성하는 페이지입니다.</p>
+{% endblock %}
+
+{% block section %}
+<div class="review-container">        
+        <div class="form-group">
+            <label for="reviewer_id">ID</label>
+            <input type="text" id="reviewer_id" name="reviewer_id" placeholder="아이디를 입력하세요" required>
+        </div>
+
+        <div class="form-group">
+            <label for="product_name">상품 이름</label>
+            <input type="text" id="product_name" name="product_name" placeholder="상품명을 입력하세요" required>
+        </div>
+
+        <div class="form-group">
+            <label for="review_image">사진 첨부</label>
+            <input type="file" id="review_image" name="review_image" accept="image/*">
+        </div>
+
+        <div class="form-group">
+            <label for="review_title">리뷰 제목</label>
+            <input type="text" id="review_title" name="review_title" placeholder="리뷰 제목을 적어주세요" required>
+        </div>
+
+        <div class="form-group">
+            <label for="review_content">리뷰 내용</label>
+            <textarea id="review_content" name="review_content" rows="5" placeholder="상품에 대한 솔직한 평가를 남겨주세요" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="star_rating">별점</label>
+            <select id="star_rating" name="star_rating">
+                <option value="5">⭐⭐⭐⭐⭐ (5점)</option>
+                <option value="4">⭐⭐⭐⭐ (4점)</option>
+                <option value="3">⭐⭐⭐ (3점)</option>
+                <option value="2">⭐⭐ (2점)</option>
+                <option value="1">⭐ (1점)</option>
+            </select>
+        </div>
+
+        <button type="submit" class="submit-btn">리뷰 등록하기</button>
+
+    </form>
+</div>
+{% endblock section %}
