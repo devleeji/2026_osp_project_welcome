@@ -1,0 +1,24 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <h2>상품 등록 완료 (Submitted Result)</h2>
+    <hr>
+    
+    <ul>
+        <li><strong>상품명:</strong> {{ product_name }}</li>
+        <li><strong>판매자 ID:</strong> {{ seller_id }}</li>
+        <li><strong>가격:</strong> {{ price }}</li>
+        <li><strong>주소:</strong> {{ address }}</li>
+        <li><strong>상태:</strong> {{ status }}</li>
+        <li><strong>이메일:</strong> {{ email }}</li>
+    </ul>
+
+    <h3>등록된 상품 이미지</h3>
+    {% if image_file %}
+        <img src="{{ url_for('static', filename='images/' + image_file) }}" alt="상품 이미지" width="300" style="border: 1px solid #ccc; padding: 5px;">
+    {% else %}
+        <p>등록된 이미지가 없습니다.</p>
+    {% endif %}
+</div>
+{% endblock %}
