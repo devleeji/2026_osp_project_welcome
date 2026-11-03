@@ -1,7 +1,9 @@
 import os
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
+import hashlib
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = "helloosp"
 
 # 업로드된 사진을 static/images 폴더에 저장하도록 설정
 UPLOAD_FOLDER = 'static/images'
@@ -13,6 +15,31 @@ DB = DBhandler()
 @app.route("/")
 def index():
     return render_template("index.html")
+
+# 로그인 페이지 - 담당: 이지원
+@app.route("/login")
+def login():
+    return render_template("login.html")
+
+
+# 회원가입 페이지 - 담당: 이지원
+@app.route("/signup")
+def signup():
+    return render_template("signup.html")
+
+
+# 회원가입 POST 처리 - 담당: 이지원
+@app.route("/signup_post", methods=['POST'])
+def register_user():
+    data = request.form
+    pw = request.form['pw']
+    pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
+    
+    if DB.insert_user(data, pw_hash):
+        # redirect를 사용하여 주소창을 /login으로 확실히 변경
+        return redirect('/login')
+    else:
+        return render_template("signup.html", error="User ID already exists!")
 
 
 # 상품 목록 - 담당: 양설아
