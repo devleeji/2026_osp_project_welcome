@@ -1,0 +1,10 @@
+{% extends "index.html" %}
+{% block section %}
+<form action="#" method="post">
+    <p>ID : <input type="text" name="id" required></p>
+    <p>Password : <input type="password" name="pw" required></p>
+    <p>Input ID and password, and click the login button<br>
+    <input type="submit" value="Login"></p>
+</form>
+<button onclick="location.href='/signup'">Signup</button>
+{% endblock section %}
