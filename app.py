@@ -6,7 +6,8 @@ app = Flask(__name__)
 # 업로드된 사진을 static/images 폴더에 저장하도록 설정
 UPLOAD_FOLDER = 'static/images'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
+from database import DBhandler
+DB = DBhandler()
 
 # 메인 페이지 (루트 라우팅)
 @app.route("/")
@@ -55,6 +56,8 @@ def result():
             filename = file.filename
             os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        
+        DB.insert_item(product_name, request.form, "static/images/" + filename)
 
         return render_template(
             "result.html",
