@@ -1,0 +1,49 @@
+{% extends "index.html" %}
+{% block title %}{{ product_name }} - 이화대동제{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/item_detail.css') }}">
+<div class="detail-container">
+    <div class="detail-top">
+        <a class="back-link" href="{{ url_for('view_list') }}">← 돌아가기</a>
+        <span class="share-label">Share listing</span>
+    </div>
+
+    <div class="seller-header">
+        <h1>@{{ item.seller_id }}</h1>
+        <span class="location-badge">Ewha Womans University</span>
+    </div>
+
+    <div class="detail-layout">
+        <section class="product-gallery" aria-label="상품 이미지">
+            <div class="main-image">
+                {% if item.img_path %}
+                <img src="{{ url_for('static', filename=item.img_path.replace('static/', '', 1)) }}" alt="{{ product_name }} 이미지">
+                {% else %}
+                <div class="image-placeholder">등록된 상품 이미지가 없습니다.</div>
+                {% endif %}
+            </div>
+            <div class="gallery-caption">상품 이미지</div>
+        </section>
+
+        <section class="product-info" aria-label="상품 정보">
+            <div class="product-heading">
+                <h2>{{ product_name }}</h2>
+                <span class="status-badge">상태 : {{ item.status }}</span>
+            </div>
+            <div class="product-price">₩{{ item.price }}</div>
+            <div class="product-description">
+                <h3>상품 정보</h3>
+                <p><span class="detail-label-green"><strong>판매자 ID</strong></span> {{ item.seller_id }}</p>
+                <p><span class="detail-label-green"><strong>거래 장소</strong></span> {{ item.address }}</p>
+                <p><span class="detail-label-green"><strong>이메일</strong></span> {{ item.email }}</p>
+            </div>
+            <div class="product-actions">
+                <a class="action-btn primary" href="mailto:{{ item.email }}?subject={{ product_name | urlencode }}%20구매%20문의">구매</a>
+                <a class="action-btn secondary" href="{{ url_for('view_review') }}">리뷰 보기</a>
+                <button class="action-btn outline" type="button" disabled title="찜하기 기능 준비 중">찜하기</button>
+            </div>
+            <p class="pickup-note">본 상품의 문의는 판매자에게 연락해 주세요.</p>
+        </section>
+    </div>
+</div>
+{% endblock %}
