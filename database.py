@@ -52,3 +52,26 @@ class DBhandler:
             if value['id'] == id_string:
                 return False
         return True
+
+    # ===== 로그인 (09 실습) =====
+    # ID와 해시된 비밀번호가 모두 일치하면 True
+    def find_user(self, id_, pw_hash):
+        users = self.db.child("user").get()
+        if users.val() is None:
+            return False
+        for res in users.each():
+            value = res.val()
+            if value['id'] == id_ and value['pw'] == pw_hash:
+                return True
+        return False
+
+    # ===== 상품 목록 (09 실습) =====
+    # {상품명: {seller_id, price, ...}} 딕셔너리 반환
+    def get_items(self):
+        items = self.db.child("item").get().val()
+        return items if items else {}
+
+    # ===== 상품 상세 (09 실습) =====
+    # 상품명으로 상품 하나 조회 (없으면 None)
+    def get_item_byname(self, name):
+        return self.db.child("item").child(name).get().val()
