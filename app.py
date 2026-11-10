@@ -117,6 +117,19 @@ def logout():
     session.clear()
     return redirect(url_for('index'))
 
+# 상품 상세 - 담당: 이다은
+@app.route("/detail/<name>")
+def detail(name):
+    item = DB.get_item_byname(name)
+
+    if item is None:
+        return "상품을 찾을 수 없습니다.", 404
+
+    return render_template(
+        "item_detail.html",
+        item=item,
+        product_name=name
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
