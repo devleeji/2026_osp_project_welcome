@@ -3,7 +3,614 @@
 {% block title %}상품 목록 - Ewha Market{% endblock %}
 
 {% block content %}
-<h1>상품 목록</h1>
-<p>축제 부스에 등록된 상품들을 한눈에 볼 수 있는 페이지입니다.</p>
-<!-- TODO(양설아): 이 페이지 내용 작성 -->
+<style>
+    .product-list-page {
+        --product-list-green: var(--green-900);
+        --product-list-control-green: var(--green-700);
+        --product-list-dark: var(--text);
+        --product-list-muted: var(--text-sub);
+        --product-list-line: var(--line);
+        --product-list-soft: var(--surface);
+        --product-list-soft-green: var(--green-50);
+        --product-list-space-2: 0.5rem;
+        --product-list-space-2-5: 0.625rem;
+        --product-list-space-3: 0.75rem;
+        --product-list-space-4: 1rem;
+        --product-list-control-height: 2.75rem;
+        --product-list-radius-md: var(--radius-sm);
+        --product-list-radius-pill: var(--radius-pill);
+        --product-list-text-sm: var(--fs-sm);
+        --product-list-text-xs: var(--fs-xs);
+        max-width: var(--page-width);
+        margin: 0 auto;
+        color: var(--product-list-dark);
+    }
+
+    .product-list-heading { margin-bottom: 2rem; }
+    .product-list-heading h1 {
+        margin-bottom: 0.5rem;
+        color: var(--product-list-dark);
+        font-size: clamp(2rem, 5vw, 3rem);
+        line-height: 1.2;
+    }
+    .product-list-heading p { color: var(--product-list-muted); }
+
+    .product-list-controls {
+        margin-bottom: 2rem;
+        border-top: 1px solid var(--product-list-line);
+    }
+    .product-list-filter-group {
+        display: block;
+    }
+    .product-list-filter-group h2 {
+        display: flex;
+        height: 58px;
+        align-items: center;
+        gap: 0.5rem;
+        border-bottom: 1px solid var(--product-list-line);
+        font-size: 1rem;
+    }
+    .product-list-symbol {
+        width: 1.5rem;
+        height: 1.5rem;
+        flex: 0 0 auto;
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 1.8;
+    }
+    .product-list-symbol--filled {
+        fill: currentColor;
+        stroke: none;
+    }
+    .product-list-filter-options {
+        display: flex;
+        height: 78px;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: var(--product-list-space-2-5);
+        border-bottom: 1px solid var(--product-list-line);
+    }
+    .product-list-filter-chip {
+        width: auto;
+        min-width: 0;
+        justify-content: center;
+        text-align: center;
+        white-space: nowrap;
+    }
+    .product-list-filter-chip[aria-pressed="true"] {
+        background: var(--product-list-control-green);
+        color: #fff;
+    }
+
+    .product-list-list-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--product-list-line);
+    }
+
+    .product-list-summary {
+        display: flex;
+        align-items: baseline;
+        gap: 0.75rem;
+    }
+    .product-list-summary h2 { font-size: 1.5rem; }
+    .product-list-count { color: var(--product-list-muted); }
+    .product-list-sort {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .product-list-sort-control {
+        display: flex;
+        width: 190px;
+        height: 44px;
+        align-items: center;
+        border: 1px solid var(--product-list-line);
+        border-radius: var(--product-list-radius-md);
+        background: #fff;
+    }
+    .product-list-filter-action {
+        width: 119px;
+    }
+    .product-list-sort label {
+        padding-left: var(--product-list-space-3);
+        color: var(--product-list-muted);
+        font-size: var(--product-list-text-sm);
+        white-space: nowrap;
+    }
+    .product-list-sort select {
+        flex: 1;
+        width: 100%;
+        min-width: 0;
+        min-height: 2.625rem;
+        padding: 0.5rem 2rem 0.5rem 0.375rem;
+        border: 0;
+        background: transparent;
+        color: var(--product-list-dark);
+        font: inherit;
+    }
+
+    .product-list-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 32px 24px;
+    }
+    .product-list-card {
+        width: 100%;
+        min-height: 350px;
+        overflow: hidden;
+        border-radius: 10px;
+        padding: 15px;
+        background: #fff;
+        box-shadow: 0 0 0 1px var(--product-list-line);
+    }
+    .product-list-card[hidden] { display: none; }
+
+    .product-list-image-area {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 302 / 228;
+    }
+    .product-list-image-link {
+        display: block;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        background: #edf2ef;
+    }
+    .product-list-image-link:focus-visible {
+        outline: 3px solid var(--product-list-green);
+        outline-offset: 3px;
+    }
+    .product-list-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        transition: transform 180ms ease;
+    }
+    .product-list-image-link:hover .product-list-image { transform: scale(1.03); }
+    .product-list-like-button {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border: 0;
+        border-radius: 50%;
+        background: #fff;
+        color: var(--product-list-dark);
+    }
+    .product-list-like-button[aria-pressed="true"] {
+        color: var(--product-list-control-green);
+    }
+    .product-list-like-button[aria-pressed="true"] .product-list-heart {
+        fill: currentColor;
+    }
+    .product-list-image-placeholder {
+        display: grid;
+        width: 100%;
+        height: 100%;
+        place-items: center;
+        color: var(--product-list-muted);
+        font-size: 0.875rem;
+    }
+
+    .product-list-info {
+        padding-top: 14px;
+        background: #fff;
+    }
+    .product-list-meta {
+        display: flex;
+        min-width: 0;
+        flex-wrap: nowrap;
+        gap: 10px;
+    }
+    .product-list-meta-row {
+        display: flex;
+        height: 25px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        margin-bottom: 9px;
+    }
+    .product-list-badge {
+        display: inline-flex;
+        height: 25px;
+        align-items: center;
+        padding: 0 10px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: var(--product-list-soft);
+        color: var(--product-list-dark);
+        font-size: 14px;
+        line-height: 25px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .product-list-name {
+        margin-bottom: 1px;
+        overflow: hidden;
+        font-size: 20px;
+        line-height: 28px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .product-list-info .product-list-seller {
+        margin-bottom: 1px;
+        color: var(--product-list-dark);
+        font-size: 16px;
+        line-height: 22px;
+    }
+    .product-list-likes {
+        display: inline-flex;
+        height: 25px;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0 6px;
+        border: 0;
+        border-radius: 4px;
+        background: var(--product-list-soft-green);
+        color: var(--product-list-dark);
+        font-family: inherit;
+        font-size: 14px;
+        line-height: 25px;
+        white-space: nowrap;
+    }
+    .product-list-info .product-list-hours {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        margin-top: 1px;
+        color: var(--product-list-dark);
+        font-size: 16px;
+        line-height: 20px;
+    }
+    .product-list-inline-icon {
+        width: 1rem;
+        height: 1rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 2;
+    }
+    .product-list-empty {
+        padding: 4rem 1rem;
+        border: 1px solid var(--product-list-line);
+        border-radius: 0.75rem;
+        color: var(--product-list-muted);
+        text-align: center;
+    }
+    .product-list-pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.375rem;
+        margin-top: 3rem;
+    }
+    .product-list-page-link {
+        display: inline-grid;
+        min-width: var(--product-list-control-height);
+        height: var(--product-list-control-height);
+        padding: 0 0.625rem;
+        place-items: center;
+        border: 1px solid transparent;
+        border-radius: var(--product-list-radius-md);
+        color: var(--product-list-dark);
+        text-decoration: none;
+    }
+    .product-list-page-link:hover,
+    .product-list-page-link:focus-visible {
+        border-color: var(--product-list-green);
+        outline: none;
+    }
+    .product-list-page-link[aria-current="page"] {
+        background: var(--product-list-control-green);
+        color: #fff;
+        font-weight: 700;
+    }
+    .product-list-page-link[aria-disabled="true"] {
+        color: #a7afa9;
+        pointer-events: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .product-list-image { transition: none; }
+        .product-list-image-link:hover .product-list-image { transform: none; }
+    }
+</style>
+
+<section class="product-list-page" aria-labelledby="product-list-title">
+    <header class="product-list-heading">
+        <h1 id="product-list-title" tabindex="-1">상품 목록</h1>
+        <p>축제 부스에 등록된 상품들을 한눈에 확인해 보세요.</p>
+    </header>
+
+    <section class="product-list-controls" aria-label="상품 필터">
+        <div class="product-list-filter-group" data-filter-type="category">
+            <h2>
+                <svg class="product-list-symbol product-list-symbol--filled" viewBox="80 292 24 24" aria-hidden="true">
+                    <path d="M96 299V307H99V315H101V295C98.24 295 96 297.24 96 299ZM91 302H89V295H87V302H85V295H83V302C83 304.21 84.79 306 87 306V315H89V306C91.21 306 93 304.21 93 302V295H91V302Z"></path>
+                </svg>
+                상품 선택
+            </h2>
+            <div class="product-list-filter-options" aria-label="상품 카테고리">
+                <button class="chip product-list-filter-chip" type="button" aria-pressed="false">분식</button>
+                <button class="chip product-list-filter-chip" type="button" aria-pressed="false">튀김</button>
+                <button class="chip product-list-filter-chip" type="button" aria-pressed="false">탄산음료</button>
+                <button class="chip product-list-filter-chip" type="button" aria-pressed="false">국수</button>
+                <button class="chip product-list-filter-chip" type="button" aria-pressed="false">꼬치</button>
+                <button class="chip product-list-filter-chip" type="button" aria-pressed="false">밀크티</button>
+                <button class="chip product-list-filter-chip" type="button" aria-pressed="false">기타</button>
+            </div>
+        </div>
+
+        <div class="product-list-filter-group" data-filter-type="address">
+            <h2>
+                <svg class="product-list-symbol product-list-symbol--filled" viewBox="80 429 24 24" aria-hidden="true">
+                    <path d="M80 439.667V453H86.5455V446.333H88.7273V453H95.2727V439.667L87.6364 433L80 439.667ZM93.0909 450.333H90.9091V443.667H84.3636V450.333H82.1818V441.04L87.6364 436.28L93.0909 441.04V450.333Z"></path>
+                    <path d="M99.6364 434.333H97.4545V437H99.6364V434.333Z"></path>
+                    <path d="M99.6364 439.667H97.4545V442.333H99.6364V439.667Z"></path>
+                    <path d="M99.6364 445H97.4545V447.667H99.6364V445Z"></path>
+                    <path d="M89.8182 429V431.627L92 433.533V431.667H101.818V450.333H97.4545V453H104V429H89.8182Z"></path>
+                </svg>
+                장소 선택
+            </h2>
+            <div class="product-list-filter-options" aria-label="판매 장소">
+                <button class="chip product-list-filter-chip" type="button" aria-pressed="false">학생문화관</button>
+                <button class="chip product-list-filter-chip" type="button" aria-pressed="false">생활관</button>
+                <button class="chip product-list-filter-chip" type="button" aria-pressed="false">정문</button>
+                <button class="chip product-list-filter-chip" type="button" aria-pressed="false">포스코관</button>
+                <button class="chip product-list-filter-chip" type="button" aria-pressed="false">대강당</button>
+                <button class="chip product-list-filter-chip" type="button" aria-pressed="false">기타</button>
+            </div>
+        </div>
+    </section>
+
+    {% set product_items = items|default([], true) %}
+
+    <div class="product-list-list-header">
+        <div class="product-list-summary">
+            <h2 id="product-list-result-title">전체 상품</h2>
+            <span class="product-list-count"><span id="product-list-count">{{ product_items|length }}</span>개</span>
+        </div>
+        <div class="product-list-sort">
+            <button class="btn btn-outline product-list-filter-action" id="product-list-filter-action" type="button">
+                <svg class="product-list-inline-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 6h4M12 6h8M9 3v6M4 12h10M18 12h2M15 9v6M4 18h2M10 18h10M7 15v6"></path>
+                </svg>
+                필터링
+            </button>
+            <div class="product-list-sort-control">
+                <label for="product-list-sort-select">정렬 :</label>
+                <select id="product-list-sort-select">
+                    <option>최신순</option>
+                    <option>가격 낮은순</option>
+                    <option>가격 높은순</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    {% if product_items %}
+    <div class="product-list-grid" id="product-list-grid">
+        {% for item_key, item in product_items.items() %}
+        {% set item_name = item.name|default(item_key, true) %}
+        {% set item_category = item.category|default('기타', true) %}
+        {% set item_address = item.address|default('기타', true) %}
+        <article
+            class="product-list-card"
+            data-name="{{ item_name }}"
+            data-category="{{ item_category }}"
+            data-address="{{ item_address }}"
+            data-price="{{ item.price|default(0, true) }}"
+        >
+            <div class="product-list-image-area">
+                <a class="product-list-image-link" href="/detail/{{ item_name|urlencode }}" aria-label="{{ item_name }} 상세 보기">
+                    {% if item.img_path %}
+                    <img class="product-list-image" src="{{ url_for('static', filename=item.img_path.replace('static/', '', 1)) }}" alt="{{ item_name }}">
+                    {% else %}
+                    <span class="product-list-image-placeholder">이미지 없음</span>
+                    {% endif %}
+                </a>
+                <button class="product-list-like-button" type="button" aria-label="{{ item_name }} 찜하기" aria-pressed="false">
+                    <svg class="product-list-symbol product-list-heart" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="product-list-info">
+                <div class="product-list-meta-row">
+                    <div class="product-list-meta">
+                        <span class="tag product-list-badge">{{ item_category }}</span>
+                        {% if item.address %}<span class="tag product-list-badge">{{ item_address }}</span>{% endif %}
+                    </div>
+                    {% if item.like_count is defined %}
+                    <button class="product-list-likes" type="button" aria-label="{{ item_name }} 좋아요 {{ item.like_count }}개">
+                        <svg class="product-list-inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path></svg>
+                        {{ item.like_count }}
+                    </button>
+                    {% endif %}
+                </div>
+                <h3 class="product-list-name">{{ item_name }}</h3>
+                {% if item.seller_id %}<p class="product-list-seller">@{{ item.seller_id }}</p>{% endif %}
+                {% if item.opening_hours %}
+                <p class="product-list-hours">
+                    <svg class="product-list-inline-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+                    {{ item.opening_hours }}
+                </p>
+                {% endif %}
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    <p class="product-list-empty" id="product-list-filter-empty" hidden>조건에 맞는 상품이 없습니다.</p>
+    <nav class="pagination product-list-pagination" id="product-list-pagination" aria-label="상품 목록 페이지"></nav>
+    {% else %}
+    <p class="product-list-empty">등록된 상품이 없습니다.</p>
+    {% endif %}
+</section>
+
+{% if product_items %}
+<script>
+    (() => {
+        const ITEMS_PER_PAGE = 8;
+        const cards = [...document.querySelectorAll(".product-list-card")];
+        const grid = document.getElementById("product-list-grid");
+        const pagination = document.getElementById("product-list-pagination");
+        const count = document.getElementById("product-list-count");
+        const resultTitle = document.getElementById("product-list-result-title");
+        const empty = document.getElementById("product-list-filter-empty");
+        const sortSelect = document.getElementById("product-list-sort-select");
+        const filterAction = document.getElementById("product-list-filter-action");
+        const state = {
+            category: null,
+            address: null,
+            sort: "최신순"
+        };
+
+        cards.forEach((card, index) => {
+            card.dataset.originalIndex = index;
+        });
+
+        function filteredCards() {
+            const filtered = cards.filter(card => {
+                const matchesCategory = !state.category || card.dataset.category === state.category;
+                const matchesAddress = !state.address || card.dataset.address === state.address;
+                return matchesCategory && matchesAddress;
+            });
+
+            return filtered.sort((a, b) => {
+                if (state.sort === "가격 낮은순") return Number(a.dataset.price) - Number(b.dataset.price);
+                if (state.sort === "가격 높은순") return Number(b.dataset.price) - Number(a.dataset.price);
+                return Number(a.dataset.originalIndex) - Number(b.dataset.originalIndex);
+            });
+        }
+
+        function getRequestedPage(totalPages) {
+            const page = Number(new URLSearchParams(window.location.search).get("page"));
+            return Number.isInteger(page) && page >= 1 && page <= totalPages ? page : 1;
+        }
+
+        function pageUrl(page) {
+            const url = new URL(window.location.href);
+            url.searchParams.set("page", page);
+            return `${url.pathname}${url.search}${url.hash}`;
+        }
+
+        function renderPagination(currentPage, totalPages) {
+            pagination.replaceChildren();
+
+            function appendLink(page, label, text, disabled = false) {
+                const link = document.createElement("a");
+                link.className = "product-list-page-link";
+                link.href = pageUrl(page);
+                link.textContent = text;
+                link.setAttribute("aria-label", label);
+                if (disabled) link.setAttribute("aria-disabled", "true");
+                if (!disabled) {
+                    link.addEventListener("click", event => {
+                        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                        event.preventDefault();
+                        history.pushState({}, "", link.href);
+                        showPage(page, true);
+                    });
+                }
+                pagination.append(link);
+                return link;
+            }
+
+            if (totalPages === 0) return;
+            appendLink(Math.max(1, currentPage - 1), "이전 페이지", "<", currentPage === 1);
+            for (let page = 1; page <= totalPages; page += 1) {
+                const link = appendLink(page, `상품 목록 ${page}페이지`, String(page));
+                if (page === currentPage) {
+                    link.setAttribute("aria-current", "page");
+                    link.classList.add("active");
+                }
+            }
+            appendLink(Math.min(totalPages, currentPage + 1), "다음 페이지", ">", currentPage === totalPages);
+        }
+
+        function showPage(page, moveFocus = false) {
+            const visibleCards = filteredCards();
+            const totalPages = Math.ceil(visibleCards.length / ITEMS_PER_PAGE);
+            const safePage = totalPages === 0 ? 1 : Math.min(page, totalPages);
+            const start = (safePage - 1) * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+            cards.forEach(card => {
+                card.hidden = true;
+            });
+            visibleCards.forEach((card, index) => {
+                grid.append(card);
+                card.hidden = index < start || index >= end;
+            });
+            count.textContent = visibleCards.length;
+            resultTitle.textContent = state.category || "전체 상품";
+            empty.hidden = visibleCards.length !== 0;
+            renderPagination(safePage, totalPages);
+            if (moveFocus) {
+                document.getElementById("product-list-title").focus({ preventScroll: true });
+                const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+            }
+        }
+
+        document.querySelectorAll(".product-list-filter-group[data-filter-type]").forEach(group => {
+            group.addEventListener("click", event => {
+                const button = event.target.closest(".product-list-filter-chip");
+                if (!button) return;
+                const wasPressed = button.getAttribute("aria-pressed") === "true";
+                group.querySelectorAll(".product-list-filter-chip").forEach(chip => {
+                    chip.setAttribute("aria-pressed", "false");
+                    chip.classList.remove("active");
+                });
+                if (!wasPressed) {
+                    button.setAttribute("aria-pressed", "true");
+                    button.classList.add("active");
+                }
+                state[group.dataset.filterType] = wasPressed ? null : button.textContent.trim();
+                history.replaceState({}, "", pageUrl(1));
+                showPage(1);
+            });
+        });
+
+        sortSelect.addEventListener("change", () => {
+            state.sort = sortSelect.value;
+            history.replaceState({}, "", pageUrl(1));
+            showPage(1);
+        });
+
+        filterAction.addEventListener("click", () => {
+            const selectedFilter = document.querySelector(".product-list-filter-chip[aria-pressed='true']");
+            (selectedFilter || document.querySelector(".product-list-filter-chip")).focus();
+            document.querySelector(".product-list-controls").scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+
+        document.querySelectorAll(".product-list-like-button").forEach(button => {
+            button.addEventListener("click", () => {
+                const pressed = button.getAttribute("aria-pressed") === "true";
+                button.setAttribute("aria-pressed", String(!pressed));
+            });
+        });
+
+        window.addEventListener("popstate", () => {
+            const totalPages = Math.ceil(filteredCards().length / ITEMS_PER_PAGE);
+            showPage(getRequestedPage(totalPages));
+        });
+
+        const initialTotalPages = Math.ceil(filteredCards().length / ITEMS_PER_PAGE);
+        showPage(getRequestedPage(initialTotalPages));
+    })();
+</script>
+{% endif %}
 {% endblock %}

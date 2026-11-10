@@ -45,7 +45,7 @@ def register_user():
 # 상품 목록 - 담당: 양설아
 @app.route("/list")
 def view_list():
-    return render_template("list.html")
+    return render_template("list.html", items=DB.get_items())
 
 
 # 리뷰 목록 - 담당: 양설아
