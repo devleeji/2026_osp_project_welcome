@@ -11,21 +11,25 @@ class DBhandler:
         firebase = pyrebase.initialize_app(config)
         self.db = firebase.database()
 
-    # ===== 상품 등록 (실습 1) =====
-    # key: 상품명 / fields: 판매자 ID, 가격, 주소, 상태, 이메일, 이미지 경로
+    # ===== 상품 등록 =====
+    # key: Firebase 자동 생성 키(item_id) / fields: 상품명, 판매자 ID, 가격, 주소, 상태, 이메일, 이미지 경로, 카테고리
     # data의 키는 reg_items.html 폼의 name 값과 같아야 함
+    # 반환값: 새로 만들어진 item_id
     def insert_item(self, name, data, img_path):
         item_info = {
+            "product_name": name,
             "seller_id": data['seller_id'],
             "price": data['price'],
             "address": data['address'],
             "status": data['status'],
             "email": data['email'],
-            "img_path": img_path
+            "img_path": img_path,
+            "category": data.get('category', '')
         }
-        self.db.child("item").child(name).set(item_info)
-        print(data, img_path)
-        return True
+        result = self.db.child("item").push(item_info)
+        item_id = result["name"]  # Firebase가 만든 고유 키
+        print(item_id, data, img_path)
+        return item_id
 
     # ===== 회원가입 (실습 2) =====
     # data: 폼 입력값(id, nickname), pw_hash: 해시된 비밀번호
@@ -65,13 +69,21 @@ class DBhandler:
                 return True
         return False
 
-    # ===== 상품 목록 (09 실습) =====
-    # {상품명: {seller_id, price, ...}} 딕셔너리 반환
+    # ===== 상품 목록 =====
+    # {item_id: {product_name, seller_id, price, ...}} 딕셔너리 반환
     def get_items(self):
         items = self.db.child("item").get().val()
-        return items if items else {}
+        return dict(items) if items else {}
 
-    # ===== 상품 상세 (09 실습) =====
+    # ===== 상품 상세 =====
+    # item_id로 상품 하나 조회 (없으면 None)
+    def get_item_by_id(self, item_id):
+        return self.db.child("item").child(item_id).get().val()
+
     # 상품명으로 상품 하나 조회 (없으면 None)
+    # 상세 링크가 item_id로 바뀌기 전까지 쓰는 호환용 함수
     def get_item_byname(self, name):
-        return self.db.child("item").child(name).get().val()
+        for item_id, item in self.get_items().items():
+            if item.get("product_name", item_id) == name:
+                return item
+        return None
