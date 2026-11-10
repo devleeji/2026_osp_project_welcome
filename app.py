@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import hashlib
 
 app = Flask(__name__)
@@ -96,6 +96,26 @@ def result():
             email=email,
             image_file=filename
         )
+
+# 로그인 처리 - 담당: 이지원
+@app.route("/login_confirm", methods=['POST'])
+def login_user():
+    id_ = request.form['id']
+    pw = request.form['pw']
+    pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
+    if DB.find_user(id_, pw_hash):
+        session['id'] = id_
+        return redirect(url_for('index'))
+    else:
+        flash("Wrong ID or PW!")
+        return render_template("login.html")
+
+
+# 로그아웃 - 담당: 이지원
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
 
 
 if __name__ == "__main__":
