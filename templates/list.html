@@ -404,7 +404,7 @@
     {% if product_items %}
     <div class="product-list-grid" id="product-list-grid">
         {% for item_key, item in product_items.items() %}
-        {% set item_name = item.name|default(item_key, true) %}
+        {% set item_name = item.product_name|default(item.name, true)|default(item_key, true) %}
         {% set item_category = item.category|default('기타', true) %}
         {% set item_address = item.address|default('기타', true) %}
         <article
