@@ -3,36 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Ewha Market{% endblock %}</title>
+    <title>{% block title %}이화대동제 · Ewha Market{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <!-- 네비게이션 바: 모든 페이지 공통 -->
-    <nav class="navbar">
-        <a href="{{ url_for('index') }}" class="logo">Ewha Market</a>
-        <ul class="nav-links">
-            {% if session['id'] %}
-            <li><a>Hello, {{ session['id'] }}!</a></li>
-            <li><a href="{{ url_for('logout') }}">logout</a></li>
-            {% else %}
-            <li><a href="{{ url_for('login') }}">로그인</a></li>
-            {% endif %}
-            <li><a href="{{ url_for('view_list') }}">상품 목록</a></li>
-            <li><a href="{{ url_for('view_review') }}">리뷰 목록</a></li>
-            <li><a href="{{ url_for('reg_items') }}">상품 등록</a></li>
-            <li><a href="{{ url_for('reg_reviews') }}">리뷰 등록</a></li>
-        </ul>
-    </nav>
+    <!-- ===== 공통 헤더 (담당: 장예희) ===== -->
+    <header class="site-header">
+        <div class="header-inner">
+            <!-- 로고 -->
+            <a href="{{ url_for('index') }}" class="brand">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="" class="brand-mark"
+                     onerror="this.style.display='none'">
+                <span class="brand-name">이화대동제</span>
+            </a>
 
-    <!-- 각 페이지 내용이 들어가는 자리 -->
+            <!-- 검색창 (기능은 다음 단계에서 연결) -->
+            <form class="search" action="{{ url_for('view_list') }}" method="get" role="search">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="search" name="q" placeholder="상품, 부스 이름으로 검색" aria-label="검색">
+            </form>
+
+            <!-- 로그인 상태에 따라 바뀌는 메뉴 -->
+            <nav class="header-nav">
+                {% if session['id'] %}
+                <span class="nav-link">Hello, {{ session['id'] }}!</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-primary btn-sm">로그아웃</a>
+                <a href="#" class="nav-link">마이페이지</a>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm">로그인</a>
+                <a href="{{ url_for('signup') }}" class="nav-link">회원가입</a>
+                {% endif %}
+            </nav>
+
+            <!-- 상품 등록 버튼 -->
+            <a href="{{ url_for('reg_items') }}" class="btn btn-primary btn-register">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                상품 등록
+            </a>
+
+            <!-- 프로필 (로그인했을 때만) -->
+            {% if session['id'] %}
+            <div class="profile">
+                <span class="avatar">{{ session['id'][:2] | upper }}</span>
+                <span class="profile-id">@{{ session['id'] }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- ===== 각 페이지 내용 ===== -->
     <main class="container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash-list">
+            {% for message in messages %}
+            <p class="flash">{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
         {% block content %}
-        <h1>어서오소! Ewha Market</h1>
-        <p>이화대동제 축제 부스의 상품을 둘러보고 구매할 수 있는 곳이에요.</p>
-        <p>위 메뉴에서 상품 목록, 리뷰 목록, 상품 등록, 리뷰 등록 페이지로 이동할 수 있어요.</p>
+        <h1 class="page-title">어서오소! Ewha Market</h1>
+        <p class="page-desc">이화대동제 축제 부스의 상품을 둘러보고 구매할 수 있는 곳이에요.</p>
         {% endblock %}
         {% block section %}
         {% endblock section %}
     </main>
+
+    <!-- ===== 공통 푸터 ===== -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p class="copyright">© 2026 Ewha Market · A little closer, a little greener.</p>
+            <ul class="footer-links">
+                <li><a href="#">이용약관</a></li>
+                <li><a href="#">도움말</a></li>
+                <li><a href="#">개인정보처리방침</a></li>
+            </ul>
+        </div>
+    </footer>
 </body>
 </html>
