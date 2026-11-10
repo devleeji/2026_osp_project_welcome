@@ -1,6 +1,11 @@
 {% extends "index.html" %}
 {% block section %}
-<form action="#" method="post">
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<script>alert("{{ messages[0] }}");</script>
+{% endif %}
+{% endwith %}
+<form action="/login_confirm" method="post">
     <p>ID : <input type="text" name="id" required></p>
     <p>Password : <input type="password" name="pw" required></p>
     <p>Input ID and password, and click the login button<br>
