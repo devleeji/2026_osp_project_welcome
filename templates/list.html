@@ -415,7 +415,7 @@
             data-price="{{ item.price|default(0, true) }}"
         >
             <div class="product-list-image-area">
-                <a class="product-list-image-link" href="/detail/{{ item_name|urlencode }}" aria-label="{{ item_name }} 상세 보기">
+                <a class="product-list-image-link" href="/detail/{{ item_key|urlencode }}" aria-label="{{ item_name }} 상세 보기">
                     {% if item.img_path %}
                     <img class="product-list-image" src="{{ url_for('static', filename=item.img_path.replace('static/', '', 1)) }}" alt="{{ item_name }}">
                     {% else %}
