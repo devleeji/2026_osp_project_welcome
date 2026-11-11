@@ -1,15 +1,39 @@
 {% extends "index.html" %}
-{% block section %}
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-<script>alert("{{ messages[0] }}");</script>
-{% endif %}
-{% endwith %}
-<form action="/login_confirm" method="post">
-    <p>ID : <input type="text" name="id" required></p>
-    <p>Password : <input type="password" name="pw" required></p>
-    <p>Input ID and password, and click the login button<br>
-    <input type="submit" value="Login"></p>
+{# 로그인 - 담당: 이지원 / 피그마: Login Page(Kor)
+   input name(id, pw)은 app.py login_user 와 연결돼 있음
+   로그인 실패 메시지(flash)는 index.html 공통 영역에서 표시되므로 여기서 따로 띄우지 않음 #}
+{% block title %}로그인 · 이화대동제{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+
+<div class="auth-head">
+    <a href="javascript:history.back()" class="auth-back">← 돌아가기</a>
+    <div class="auth-head-row">
+        <h1 class="page-title">로그인</h1>
+        <span class="campus-badge">📍 Ewha Womans University</span>
+    </div>
+</div>
+
+<form class="auth-form" method="post" action="{{ url_for('login_user') }}">
+    <div class="auth-form-head">
+        <h2>로그인</h2>
+        <span class="required-note"><b>*</b> 필수 입력 항목</span>
+    </div>
+
+    <div class="form-group">
+        <label for="id">아이디 <span class="required">*</span></label>
+        <input type="text" id="id" name="id" placeholder="아이디를 입력하세요" required>
+    </div>
+
+    <div class="form-group">
+        <label for="pw">비밀번호 <span class="required">*</span></label>
+        <input type="password" id="pw" name="pw" placeholder="비밀번호를 입력하세요" required>
+    </div>
+
+    <label class="remember"><input type="checkbox" name="remember"> 로그인 상태 유지</label>
+
+    <hr class="auth-divider">
+    <button type="submit" class="btn btn-primary btn-block auth-submit">로그인</button>
+    <p class="auth-switch">아직 회원이 아니신가요? <a href="{{ url_for('signup') }}">회원가입</a></p>
 </form>
-<button onclick="location.href='/signup'">Signup</button>
-{% endblock section %}
+{% endblock %}

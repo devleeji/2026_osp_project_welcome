@@ -1,9 +1,11 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import hashlib
+from datetime import timedelta
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "helloosp"
+app.permanent_session_lifetime = timedelta(days=7)  # 로그인 상태 유지 기간
 
 # 업로드된 사진을 static/images 폴더에 저장하도록 설정
 UPLOAD_FOLDER = 'static/images'
@@ -105,6 +107,7 @@ def login_user():
     pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
     if DB.find_user(id_, pw_hash):
         session['id'] = id_
+        session.permanent = bool(request.form.get('remember'))
         return redirect(url_for('index'))
     else:
         flash("Wrong ID or PW!")
@@ -116,6 +119,22 @@ def login_user():
 def logout():
     session.clear()
     return redirect(url_for('index'))
+
+
+# 마이페이지 - 담당: 이지원
+# 로그인 안 했으면 로그인 페이지로 보냄
+@app.route("/mypage")
+def mypage():
+    if 'id' not in session:
+        flash("로그인이 필요합니다.")
+        return redirect(url_for('login'))
+
+    my_id = session['id']
+    user = DB.get_user(my_id)
+    # 판매자 ID를 '@아이디'로 적은 경우도 내 상품으로 인식
+    my_items = {item_id: item for item_id, item in DB.get_items().items()
+                if str(item.get('seller_id', '')).lstrip('@') == my_id}
+    return render_template("mypage.html", user=user, my_items=my_items)
 
 # 상품 상세 - 담당: 이다은
 @app.route("/detail/<name>")

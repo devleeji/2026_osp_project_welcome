@@ -32,12 +32,14 @@ class DBhandler:
         return item_id
 
     # ===== 회원가입 (실습 2) =====
-    # data: 폼 입력값(id, nickname), pw_hash: 해시된 비밀번호
+    # data: 폼 입력값(id, nickname, email, phone), pw_hash: 해시된 비밀번호
     def insert_user(self, data, pw_hash):
         user_info = {
             "id": data['id'],
             "pw": pw_hash,
-            "nickname": data['nickname']
+            "nickname": data['nickname'],
+            "email": data['email'],
+            "phone": data.get('phone', '')  # 선택 항목
         }
         if self.user_duplicate_check(str(data['id'])):
             self.db.child("user").push(user_info)
@@ -68,6 +70,18 @@ class DBhandler:
             if value['id'] == id_ and value['pw'] == pw_hash:
                 return True
         return False
+
+    # ===== 마이페이지 =====
+    # 아이디로 회원 정보 하나 조회 (없으면 None) — 비밀번호는 빼고 반환
+    def get_user(self, id_):
+        users = self.db.child("user").get()
+        if users.val() is None:
+            return None
+        for res in users.each():
+            value = res.val()
+            if value.get('id') == id_:
+                return {k: v for k, v in value.items() if k != 'pw'}
+        return None
 
     # ===== 상품 목록 =====
     # {item_id: {product_name, seller_id, price, ...}} 딕셔너리 반환
