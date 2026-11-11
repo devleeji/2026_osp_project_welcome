@@ -53,6 +53,9 @@ def view_list():
 def view_review():
     return render_template("review.html")
 
+@app.route('/review_detail')
+def review_detail():
+    return render_template('review_detail.html')
 
 # 상품 등록 - 담당: 이다은
 @app.route("/reg_items")

@@ -1,0 +1,64 @@
+{% extends "index.html" %}
+
+{% block title %}리뷰 상세 - Ewha Market{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/review_detail.css') }}">
+
+<div class="review-detail-container review-page-body">
+    <a href="{{ url_for('view_review') }}" class="back-btn">← 돌아가기</a>
+    
+    <div class="page-header">
+        <h2>리뷰 상세</h2>
+        <div class="location-badge">📍 Ewha Womans University</div>
+    </div>
+    
+    <hr class="header-divider">
+
+    <div class="detail-card">
+        <div class="card-top">
+            <div class="user-profile">
+                <!-- 프로필 이미지 예시 추가 (사진처럼) -->
+                <img src="https://ui-avatars.com/api/?name=파괴자&background=eaf3ed&color=146b46" alt="profile" class="profile-img">
+                @떡볶이파괴자
+            </div>
+            <div class="date">Oct 8, 2026</div>
+        </div>
+
+        <div class="store-info">
+            @A동아리 <span>학문관</span>
+        </div>
+        
+        <div class="product-info">
+            떡볶이 <span class="price">₩4000</span>
+        </div>
+        
+        <div class="rating">
+            ★★★★★ <span>5.0</span>
+        </div>
+        
+        <div class="review-title">
+            떡볶이 최고예요!!!
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="photo-gallery">
+            <div class="photo-item" style="background:#fdf5e6; color:#c98a72;">🍲</div>
+            <div class="photo-item" style="background:#ffe4e1; color:#ff6b6b;">🍹</div>
+            <div class="photo-item" style="background:#f5fffa; color:#ffd700;">🥤</div>
+        </div>
+
+        <div class="review-body">
+            매콤달콤한 양념이 떡에 쏙 배어있어서 정말 맛있게 먹었습니다!<br>
+            떡은 쫄깃쫄깃하고 어묵도 듬뿍 들어있어 먹는 내내 즐거웠네요.<br>
+            소스가 중독성 있어서 튀김이랑 순대를 찍어 먹기에도 완벽합니다.<br>
+            최근에 먹은 떡볶이 중 단연 최고예요. 앞으로 무조건 여기서만 시켜 먹을 것 같습니다. 강력 추천합니다!
+        </div>
+    </div>
+
+    <div class="bottom-action">
+        <a href="{{ url_for('view_review') }}" class="btn btn-primary">← Back to List</a>
+    </div>
+</div>
+{% endblock %}
