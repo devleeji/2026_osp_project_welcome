@@ -1,0 +1,62 @@
+{% extends "index.html" %}
+{# 마이페이지 - 담당: 이지원 
+   내가 등록한 상품: Firebase item 중 seller_id가 로그인한 아이디와 같은 것
+   내 리뷰 / 찜 목록: 리뷰·좋아요 기능이 연결되면 채움 #}
+{% block title %}마이페이지 · 이화대동제{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+
+<div class="auth-head">
+    <a href="javascript:history.back()" class="auth-back">← 돌아가기</a>
+    <div class="auth-head-row">
+        <h1 class="page-title">마이페이지</h1>
+        <span class="campus-badge">📍 Ewha Womans University</span>
+    </div>
+</div>
+
+<section class="profile-card">
+    <span class="profile-avatar">{{ session['id'][:2] | upper }}</span>
+    <div>
+        <p class="profile-name">{{ user.nickname if user and user.nickname else session['id'] }}</p>
+        <p class="profile-meta">
+            @{{ session['id'] }}{% if user and user.email %} · {{ user.email }}{% endif %}{% if user and user.phone %} · {{ user.phone }}{% endif %}
+        </p>
+    </div>
+    <a href="{{ url_for('logout') }}" class="btn btn-outline btn-sm">로그아웃</a>
+</section>
+
+<section class="mypage-section">
+    <h2 class="section-title">내가 등록한 상품 <span class="section-count">{{ my_items | length }}개</span></h2>
+    {% if my_items %}
+    <div class="my-items">
+        {% for item_id, item in my_items.items() %}
+        <a class="my-item" href="{{ url_for('detail', name=item.product_name) }}">
+            <div class="my-item-image">
+                {% if item.img_path and item.img_path != 'static/images/' %}
+                <img src="{{ url_for('static', filename=item.img_path.replace('static/', '', 1)) }}" alt="{{ item.product_name }}" onerror="this.remove()">
+                {% endif %}
+            </div>
+            <p class="my-item-name">{{ item.product_name }}</p>
+            <p class="my-item-meta">₩{{ item.price }} · {{ item.address }}</p>
+            <span class="tag">{{ item.status }}</span>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-box">
+        <p>아직 등록한 상품이 없어요.</p>
+        <a href="{{ url_for('reg_items') }}" class="btn btn-primary btn-sm">상품 등록하기</a>
+    </div>
+    {% endif %}
+</section>
+
+<section class="mypage-section">
+    <h2 class="section-title">내 리뷰</h2>
+    <div class="empty-box">내가 작성한 리뷰 표시</div>
+</section>
+
+<section class="mypage-section">
+    <h2 class="section-title">찜 목록</h2>
+    <div class="empty-box">찜한 상품 표시</div>
+</section>
+{% endblock %}

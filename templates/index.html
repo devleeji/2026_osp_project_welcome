@@ -33,7 +33,7 @@
                 {% if session['id'] %}
                 <span class="nav-link">Hello, {{ session['id'] }}!</span>
                 <a href="{{ url_for('logout') }}" class="btn btn-primary btn-sm">로그아웃</a>
-                <a href="#" class="nav-link">마이페이지</a>
+                <a href="{{ url_for('mypage') }}" class="nav-link">마이페이지</a>
                 {% else %}
                 <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm">로그인</a>
                 <a href="{{ url_for('signup') }}" class="nav-link">회원가입</a>
