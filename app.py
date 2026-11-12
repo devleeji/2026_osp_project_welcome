@@ -111,6 +111,8 @@ def login_user():
     pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
     if DB.find_user(id_, pw_hash):
         session['id'] = id_
+        user = DB.get_user(id_)
+        session['nickname'] = user.get('nickname') if user else id_
         session.permanent = bool(request.form.get('remember'))
         return redirect(url_for('index'))
     else:
