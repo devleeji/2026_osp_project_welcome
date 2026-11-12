@@ -24,7 +24,8 @@ class DBhandler:
             "status": data['status'],
             "email": data['email'],
             "img_path": img_path,
-            "category": data.get('category', '')
+            "category": data.get('category', ''),
+            "description": data.get('description', '')
         }
         result = self.db.child("item").push(item_info)
         item_id = result["name"]  # Firebase가 만든 고유 키
