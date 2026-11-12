@@ -1,9 +1,144 @@
-{% extends "index.html" %}
+{% extends "index.html" %} 
 
-{% block title %}리뷰 목록 - Ewha Market{% endblock %}
+{% block title %}리뷰 목록 - Ewha Market{% endblock %} 
 
 {% block content %}
-<h1>리뷰 목록</h1>
-<p>구매자들이 남긴 상품 리뷰를 모아 보는 페이지입니다.</p>
-<!-- TODO(양설아): 이 페이지 내용 작성 -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/review.css') }}">
+
+<div class="review-container">
+    <a href="#" class="back-btn">← 돌아가기</a>
+    
+    <div class="page-header">
+        <div class="title-area">
+            <h2>리뷰 목록</h2>
+            <span>리뷰 25개</span>
+        </div>
+        <div class="location-badge">📍 Ewha Womans University</div>
+    </div>
+
+    <!-- 통계 요약 영역 -->
+    <div class="summary-box">
+        <div class="summary-col">
+            <h4>평균 별점</h4>
+            <div class="score">4.5<span> / 5</span></div>
+            <div class="stars">★★★★★</div>
+        </div>
+        <div class="summary-col">
+            <h4>전체 리뷰 수</h4>
+            <div class="score">25</div>
+        </div>
+        <div class="summary-col">
+            <div class="rating-bar-row">
+                <span class="star-label">⭐5</span>
+                <div class="bar-bg"><div class="bar-fill" style="width: 72%;"></div></div>
+                <span class="bar-count">18</span><span class="bar-percent">72%</span>
+            </div>
+            <div class="rating-bar-row">
+                <span class="star-label">⭐4</span>
+                <div class="bar-bg"><div class="bar-fill" style="width: 16%;"></div></div>
+                <span class="bar-count">4</span><span class="bar-percent">16%</span>
+            </div>
+            <div class="rating-bar-row">
+                <span class="star-label">⭐3</span>
+                <div class="bar-bg"><div class="bar-fill" style="width: 4%;"></div></div>
+                <span class="bar-count">1</span><span class="bar-percent">4%</span>
+            </div>
+            <div class="rating-bar-row">
+                <span class="star-label">⭐2</span>
+                <div class="bar-bg"><div class="bar-fill" style="width: 4%;"></div></div>
+                <span class="bar-count">1</span><span class="bar-percent">4%</span>
+            </div>
+            <div class="rating-bar-row">
+                <span class="star-label">⭐1</span>
+                <div class="bar-bg"><div class="bar-fill" style="width: 4%;"></div></div>
+                <span class="bar-count">1</span><span class="bar-percent">4%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 필터 및 액션 영역 -->
+    <div class="filter-area">
+        <div class="filter-group">
+            <select class="filter-select"><option>위치</option></select>
+            <select class="filter-select"><option>유형</option></select>
+            <select class="filter-select"><option>일자</option></select>
+            <select class="filter-select"><option>별점</option></select>
+            <label class="filter-checkbox"><input type="checkbox"> 사진 포함</label>
+        </div>
+        <div class="action-group">
+            <button class="btn btn-primary" onclick="location.href='{{ url_for('reg_reviews') }}'">리뷰 작성하기</button>
+            <select class="action-select"><option>최신순</option></select>
+        </div>
+    </div>
+    
+    <p class="guide-text">25개의 리뷰 중 1-5 · 카드를 선택하면 리뷰 상세로 이동합니다.</p>
+
+    <!-- 리뷰 리스트 영역 -->
+    <div class="review-list">
+        <!-- 첫 번째 리뷰 카드 -->
+        <div class="review-card" onclick="location.href='{{ url_for('review_detail') }}'">
+            <div class="card-header">
+                <div class="user-info">
+                    <img src="https://ui-avatars.com/api/?name=파괴자&background=eaf3ed&color=146b46" alt="profile" class="profile-img">
+                    @떡볶이파괴자
+                </div>
+                <div class="card-date">Oct 8, 2026</div>
+            </div>
+            <div class="product-title">떡볶이 <span class="price">₩4000</span></div>
+            <div class="card-rating">
+                ★★★★★ <span class="rating-num">5.0</span>
+            </div>
+            <div class="review-text">
+                <h5>떡볶이 최고예요!!!</h5>
+                <p>매콤달콤한 양념이 떡에 쏙 배어있어서 정말 맛있게 먹었습니다!<br>
+                떡은 쫄깃쫄깃하고 어묵도 듬뿍 들어있어 먹는 내내 즐거웠네요.<br>
+                소스가 중독성 있어서 튀김이랑 순대를 찍어 먹기에도 완벽합니다.<br>
+                최근에 먹은 떡볶이 중 단연 최고예요. 앞으로 무조건 여기서만 시켜 먹을 것 같습니다. 강력 추천합니다!</p>
+            </div>
+            <div class="photo-grid">
+                <img src="https://via.placeholder.com/120/fdf5e6/c98a72?text=🍲" class="photo-box">
+                <img src="https://via.placeholder.com/120/ffe4e1/ff6b6b?text=🍹" class="photo-box">
+                <img src="https://via.placeholder.com/120/f5fffa/ffd700?text=🥤" class="photo-box">
+            </div>
+        </div>
+
+        <!-- 두 번째 리뷰 카드 -->
+        <div class="review-card" onclick="location.href='{{ url_for('review_detail') }}'">
+            <div class="card-header">
+                <div class="user-info">
+                    <img src="https://ui-avatars.com/api/?name=광인&background=eaf3ed&color=146b46" alt="profile" class="profile-img">
+                    @떡볶이광인
+                </div>
+                <div class="card-date">Oct 7, 2026</div>
+            </div>
+            <div class="product-title">떡볶이 <span class="price">₩4000</span></div>
+            <div class="card-rating">
+                ★★★★☆ <span class="rating-num">4.0</span> <span class="bundle-info">Economics textbook bundle - Central Library</span>
+            </div>
+            <div class="review-text">
+                <h5>소스가 훌륭합니다</h5>
+                <p>소스가 달달해요</p>
+            </div>
+            <div class="photo-grid">
+                <img src="https://via.placeholder.com/120/fdf5e6/c98a72?text=🍲" class="photo-box">
+                <img src="https://via.placeholder.com/120/ffe4e1/ff6b6b?text=🍹" class="photo-box">
+            </div>
+        </div>
+    </div>
+    
+    <!-- 페이지네이션 -->
+    <div class="pagination-wrapper">
+        <div class="pagination-controls">
+            <a href="#" class="page-arrow"><</a>
+            <a href="#" class="page-num active">1</a>
+            <a href="#" class="page-num">2</a>
+            <a href="#" class="page-num">3</a>
+            <a href="#" class="page-num">4</a>
+            <a href="#" class="page-num">5</a>
+            <a href="#" class="page-arrow">></a>
+        </div>
+        <div class="pagination-info">Page 1 of 5 · 5 reviews per page</div>
+    </div>
+
+</div>
 {% endblock %}
