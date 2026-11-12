@@ -16,7 +16,8 @@ DB = DBhandler()
 # 메인 페이지 (루트 라우팅)
 @app.route("/")
 def index():
-    return render_template("index.html")
+    # main page = product list
+    return redirect(url_for('view_list'))
 
 # 로그인 페이지 - 담당: 이지원
 @app.route("/login")
