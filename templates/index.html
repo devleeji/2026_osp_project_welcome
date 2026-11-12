@@ -31,7 +31,7 @@
             <!-- 로그인 상태에 따라 바뀌는 메뉴 -->
             <nav class="header-nav">
                 {% if session['id'] %}
-                <span class="nav-link">Hello, {{ session['id'] }}!</span>
+                <span class="nav-link">Hello, {{ session['nickname'] or session['id'] }}!</span>
                 <a href="{{ url_for('logout') }}" class="btn btn-primary btn-sm">로그아웃</a>
                 <a href="{{ url_for('mypage') }}" class="nav-link">마이페이지</a>
                 {% else %}
