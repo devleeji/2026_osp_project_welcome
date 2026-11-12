@@ -30,7 +30,7 @@
     {% if my_items %}
     <div class="my-items">
         {% for item_id, item in my_items.items() %}
-        <a class="my-item" href="{{ url_for('detail', name=item.product_name) }}">
+        <a class="my-item" href="{{ url_for('detail', item_id=item_id) }}">
             <div class="my-item-image">
                 {% if item.img_path and item.img_path != 'static/images/' %}
                 <img src="{{ url_for('static', filename=item.img_path.replace('static/', '', 1)) }}" alt="{{ item.product_name }}" onerror="this.remove()">
