@@ -9,7 +9,7 @@
     </div>
 
     <div class="seller-header">
-        <h1>@{{ item.seller_id }}</h1>
+        <h1>{{ item.product_name }}</h1>
         <span class="location-badge">Ewha Womans University</span>
     </div>
 
@@ -36,6 +36,8 @@
                 <p><span class="detail-label-green"><strong>판매자 ID</strong></span> {{ item.seller_id }}</p>
                 <p><span class="detail-label-green"><strong>거래 장소</strong></span> {{ item.address }}</p>
                 <p><span class="detail-label-green"><strong>이메일</strong></span> {{ item.email }}</p>
+                <h3>상품 설명</h3>
+                <p>{{ item.description }}</p>
             </div>
             <div class="product-actions">
                 <a class="action-btn primary" href="mailto:{{ item.email }}?subject={{ product_name | urlencode }}%20구매%20문의">구매</a>

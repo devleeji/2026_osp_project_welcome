@@ -1,64 +1,125 @@
 {% extends "index.html" %}
-
 {% block title %}상품 등록 - Ewha Market{% endblock %}
-
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/reg_items.css') }}">
+<main class="registration-page">
+  <a class="back-link" href="{{ request.referrer or '/' }}">← &nbsp;돌아가기</a>
+  <div class="page-heading">
     <h1>상품 등록</h1>
-    <p>판매할 상품 정보를 입력해 등록하는 페이지입니다.</p>
-    <form action="/result" method="POST" enctype="multipart/form-data">
-
-        <p>
-            <label for="product_name">상품명:</label>
-            <input type="text" id="product_name"
-                   name="product_name" required>
-        </p>
-
-        <p>
-            <label for="seller_id">판매자 ID:</label>
-            <input type="text" id="seller_id"
-                   name="seller_id" required>
-        </p>
-
-        <p>
-            <label for="price">가격:</label>
-            <input type="number" id="price"
-                   name="price" min="0" required>
-        </p>
-
-        <p>
-            <label for="address">주소:</label>
-            <input type="text" id="address"
-                   name="address" required>
-        </p>
-
-        <p>
-            <label for="status">상태:</label>
-            <select id="status" name="status" required>
-                <option value="">Likely Now</option>
-                <option value="지정일 예약">지정일 예약</option>
-                <option value="당일 수령 가능">당일 수령 가능</option>
-            </select>
-        </p>
-
-        <p>
-            <label for="email">이메일:</label>
-            <input type="email" id="email"
-                   name="email" required>
-        </p>
-
-        <p>
-            <label for="picture">사진 파일:</label>
-            <input type="file" id="picture"
-                   name="picture" accept="image/*" required>
-        </p>
-
-        <p>
-            <button type="submit">상품 등록</button>
-            <button type="reset">초기화</button>
-        </p>
-
-    </form>
-
-</body>
-</html>
+    <span class="campus-pill">♧ &nbsp;Ewha Womans University</span>
+  </div>
+  <form action="/result" method="POST" enctype="multipart/form-data">
+    <div class="registration-grid">
+      <section class="details-section">
+        <div class="section-heading"><h2>상품 상세</h2><span class="required-note"><span class="required">*</span> 필수 입력 항목</span></div>
+        <div class="field">
+          <label for="seller_id">판매자 ID<span class="required">*</span></label>
+          <input type="text" id="seller_id" name="seller_id" required>
+          <small class="helper">상품 판매글에 판매자 ID가 공개됩니다.</small>
+        </div>
+        <div class="field">
+          <label for="product_name">상품명 <span class="required">*</span></label>
+          <input type="text" id="product_name" name="product_name" placeholder="e.g. 덕고지" required>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="price">가격 <span class="required">*</span></label>
+            <div class="price-wrap"><input type="number" id="price" name="price" min="0" placeholder="가격 입력" required></div>
+          </div>
+          <div class="field">
+            <label for="address">위치 <span class="required">*</span></label>
+            <input type="text" id="address" name="address" placeholder="e.g. 학문관" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="status">상품 상태 <span class="required">*</span></label>
+          <select id="status" name="status" required>
+            <option value="" disabled selected>상품 상태를 선택해 주세요</option>
+            <option value="지정일 예약">지정일 예약</option>
+            <option value="당일 수령 가능">당일 수령 가능</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="email">이메일 <span class="required">*</span></label>
+          <input type="email" id="email" name="email" placeholder="example@ewha.ac.kr" required>
+        </div>
+        <div class="field">
+          <label for="description">상세 설명 <span class="required">*</span></label>
+          <textarea id="description" name="description" maxlength="1000" placeholder="음식/굿즈의 상세 구성, 준비된 수량, 운영 시간 등 부스에 방문하기 전 꼭 알아야 할 정보를 소개해 주세요." required></textarea>
+          <div class="description-count"><span id="description-length">0</span> / 1,000</div>
+        </div>
+      </section>
+      <aside class="photos-section">
+        <div class="section-heading"><h2>사진 <span class="required">*</span></h2><span class="photo-count" id="photo-count">0 / 5</span></div>
+        <div class="upload-zone" id="upload-zone">
+          <div class="upload-inner">
+            <div class="camera-circle"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4H9l-2 3H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-3-3Z"/><circle cx="12" cy="13" r="3"/></svg></div>
+            <div class="upload-title">여기에 사진을 드래그하여 올려주세요</div>
+            <div class="upload-subtitle">또는 컴퓨터에서 파일 선택</div>
+            <label class="upload-button" for="picture">사진 선택하기</label>
+            <input class="visually-hidden" type="file" id="picture" name="picture" accept="image/jpeg,image/png" multiple required>
+          </div>
+        </div>
+        <div class="photo-preview" id="photo-preview"><span class="photo-placeholder">사진을 선택하면 여기에 표시됩니다.</span></div>
+        <p class="upload-help">JPG 또는 PNG (파일당 최대 10MB)<br>첫 번째 사진이 대표 이미지로 등록됩니다.</p>
+      </aside>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-cancel" type="reset">취소</button>
+      <button class="btn btn-submit" type="submit">상품 등록 &nbsp;→</button>
+    </div>
+  </form>
+</main>
+<script>
+(function () {
+  const description = document.getElementById('description');
+  const length = document.getElementById('description-length');
+  const input = document.getElementById('picture');
+  const count = document.getElementById('photo-count');
+  const preview = document.getElementById('photo-preview');
+  const zone = document.getElementById('upload-zone');
+  description.addEventListener('input', () => { length.textContent = description.value.length; });
+  function updatePreview() {
+    preview.replaceChildren();
+    const files = Array.from(input.files);
+    if (files.length > 5) {
+      alert('사진은 최대 5장까지 선택할 수 있습니다.');
+      input.value = '';
+      count.textContent = '0 / 5';
+      return;
+    }
+    for (const file of files) {
+      if (!['image/jpeg', 'image/png'].includes(file.type) || file.size > 10 * 1024 * 1024) {
+        alert('10MB 이하의 JPG 또는 PNG 파일을 선택해 주세요.');
+        input.value = '';
+        count.textContent = '0 / 5';
+        preview.replaceChildren();
+        return;
+      }
+    }
+    count.textContent = files.length + ' / 5';
+    for (const file of files) {
+      const image = document.createElement('img');
+      image.alt = '선택한 상품 사진';
+      const url = URL.createObjectURL(file);
+      image.src = url;
+      image.onload = () => URL.revokeObjectURL(url);
+      preview.appendChild(image);
+    }
+    if (!files.length) preview.innerHTML = '<span class="photo-placeholder">사진을 선택하면 여기에 표시됩니다.</span>';
+  }
+  input.addEventListener('change', updatePreview);
+  zone.addEventListener('dragover', event => { event.preventDefault(); });
+  zone.addEventListener('drop', event => {
+    event.preventDefault();
+    const transfer = new DataTransfer();
+    for (const file of event.dataTransfer.files) transfer.items.add(file);
+    input.files = transfer.files;
+    updatePreview();
+  });
+  document.querySelector('.registration-page form').addEventListener('reset', () => {
+    setTimeout(() => { length.textContent = '0'; count.textContent = '0 / 5'; preview.innerHTML = '<span class="photo-placeholder">사진을 선택하면 여기에 표시됩니다.</span>';  }, 0);
+  });
+})();
+</script>
 {% endblock %}

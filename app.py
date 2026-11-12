@@ -140,9 +140,9 @@ def mypage():
     return render_template("mypage.html", user=user, my_items=my_items)
 
 # 상품 상세 - 담당: 이다은
-@app.route("/detail/<name>")
-def detail(name):
-    item = DB.get_item_byname(name)
+@app.route("/detail/<item_id>")
+def detail(item_id):
+    item = DB.get_item_by_id(item_id)
 
     if item is None:
         return "상품을 찾을 수 없습니다.", 404
@@ -150,7 +150,7 @@ def detail(name):
     return render_template(
         "item_detail.html",
         item=item,
-        product_name=name
+        item_id=item_id
     )
 
 if __name__ == "__main__":
