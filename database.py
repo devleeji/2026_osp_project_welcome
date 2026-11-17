@@ -136,12 +136,12 @@ class DBhandler:
     # ===== 좋아요 (10 실습) =====
     # DB 구조: like / item_id / user_id : true
     # 이미 좋아요면 취소, 아니면 좋아요. 반환값: 바뀐 뒤 좋아요 상태 (True/False)
+    # 주의: pyrebase는 get/set/remove 후 경로가 초기화되므로 매번 child()로 경로를 새로 만들어야 함
     def toggle_like(self, item_id, user_id):
-        ref = self.db.child("like").child(item_id).child(user_id)
-        if ref.get().val():
-            ref.remove()
+        if self.db.child("like").child(item_id).child(user_id).get().val():
+            self.db.child("like").child(item_id).child(user_id).remove()
             return False
-        ref.set(True)
+        self.db.child("like").child(item_id).child(user_id).set(True)
         return True
 
     # 이 사용자가 이 상품에 좋아요를 눌렀는지 (True/False)
