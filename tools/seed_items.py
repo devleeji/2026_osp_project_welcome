@@ -49,6 +49,7 @@ def main():
             "email": "booth@ewha.ac.kr",
             "category": category,
             "description": f"{place} 부스의 {name}입니다. (테스트 데이터)",
+            "opening_hours": "09:00~16:00",
         }
         item_id = DB.insert_item(name, data, "static/illustrations/" + img)
         print(f"  추가: {name} -> {item_id}")
