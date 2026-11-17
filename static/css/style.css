@@ -491,3 +491,27 @@ img {
         gap: 8px;
     }
 }
+
+/* ===== 좋아요 버튼 (상품 상세) ===== */
+.like-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.like-btn .like-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.action-btn.like-btn.liked {
+    border-color: #e0475b;
+    color: #e0475b;
+    background-color: #fff1f3;
+}
+
+.like-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
