@@ -1,5 +1,6 @@
 import json
 import pyrebase
+from datetime import datetime
 
 
 class DBhandler:
@@ -129,7 +130,8 @@ class DBhandler:
             "item_id": item_id,
             "product_name": product_name,
             "img_filename": img_filename,
-            "user_id": user_id
+            "user_id": user_id,
+            "created_at": datetime.now().strftime("%b %d, %Y")
         }
         result = self.db.child("review").push(review_info)
         review_id = result["name"]
