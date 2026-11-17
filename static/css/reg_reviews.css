@@ -1,14 +1,14 @@
 body {
-    background-color: var(--white) !important;
+    background-color: var(--white, #ffffff) !important;
 }
 
-.reg-review-container { max-width: 1200px; margin: 0 auto; color: var(--text); padding-bottom: 60px; }
+.reg-review-container { max-width: 1200px; margin: 0 auto; color: var(--text, #333); padding-bottom: 60px; font-family: sans-serif; }
 
-.back-btn { text-decoration: none; color: var(--text-sub); display: inline-block; margin-bottom: 20px; font-size: var(--fs-sm); }
+.back-btn { text-decoration: none; color: #888; display: inline-block; margin-bottom: 20px; font-size: 14px; }
 .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.page-header h2 { font-size: var(--fs-xl); margin: 0; }
-.location-badge { background-color: var(--green-50); color: var(--green-900); padding: 6px 14px; border-radius: 20px; font-size: var(--fs-xs); font-weight: bold; }
-.header-divider { border: none; border-top: 1px solid var(--line); margin-bottom: 32px; }
+.page-header h2 { font-size: 28px; margin: 0; }
+.location-badge { background-color: #eaf3ee; color: #2b4a3a; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+.header-divider { border: none; border-top: 1px solid #eee; margin-bottom: 32px; }
 
 .form-wrapper { display: flex; gap: 60px; margin-bottom: 40px; }
 .form-left { flex: 2; }
@@ -16,22 +16,38 @@ body {
 
 .form-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
 .form-section-header h3 { font-size: 18px; margin: 0; }
-.required-note { font-size: 12px; color: var(--text-sub); }
-.required-note span, .req-star { color: var(--green-900); }
+.required-note { font-size: 12px; color: #888; }
+.required-note span, .req-star { color: #2b4a3a; }
 
 .reg-review-container .form-group { margin-bottom: 24px; }
-.helper-text { font-size: 12px; color: var(--text-sub); margin-top: 8px; }
-.char-count { text-align: left; font-size: 12px; color: var(--text-sub); margin-top: 8px; }
+.reg-review-container .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+.reg-review-container label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 15px; }
 
-.star-rating-area { display: flex; align-items: center; gap: 12px; font-size: 24px; color: var(--green-900); }
-.star-rating-text { font-size: var(--fs-sm); color: var(--text); font-weight: bold; }
+.helper-text { font-size: 12px; color: #888; margin-top: 8px; line-height: 1.4; }
+.char-count { text-align: left; font-size: 12px; color: #888; margin-top: 8px; }
+
+/* 별점 영역 스타일 */
+.star-rating-area { display: flex; align-items: center; gap: 4px; font-size: 28px; color: #2b4a3a; }
+.star { cursor: pointer; transition: color 0.2s; }
+.star-rating-text { font-size: 14px; color: #333; font-weight: bold; margin-left: 12px; }
 
 .photo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.photo-header h3 { font-size: var(--fs-md); margin: 0; }
-.photo-count { font-size: var(--fs-xs); color: var(--text-sub); }
-.upload-box { background-color: var(--page-bg); border-radius: var(--radius-sm); padding: 40px 20px; text-align: center; margin-bottom: 12px; }
-.upload-icon { font-size: 24px; color: var(--green-900); margin-bottom: 12px; }
-.upload-box p { font-size: 15px; font-weight: bold; margin-bottom: 4px; }
-.upload-box span { font-size: 12px; color: var(--text-sub); display: block; margin-bottom: 16px; }
+.photo-header h3 { font-size: 18px; margin: 0; }
+.photo-count { font-size: 13px; color: #888; }
 
-.form-footer { border-top: 1px solid var(--line); padding-top: 24px; display: flex; justify-content: flex-end; gap: 12px; }
+/* 커스텀 파일 업로드 박스 */
+.upload-box { background-color: #f8f9fa; border: 1px dashed #ddd; border-radius: 8px; padding: 40px 20px; text-align: center; margin-bottom: 12px; transition: background-color 0.2s; }
+.upload-icon-wrapper { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; background-color: #eaf3ee; border-radius: 50%; margin-bottom: 16px; }
+.upload-icon { font-size: 20px; }
+.upload-box p { font-size: 15px; font-weight: bold; margin: 0 0 8px 0; color: #333; }
+.upload-box span { font-size: 13px; color: #888; display: block; margin-bottom: 20px; }
+
+/* 커스텀 파일 선택 버튼 */
+.btn-photo-select { background-color: #fff; border: 1px solid #ddd; padding: 8px 16px; border-radius: 4px; font-size: 14px; font-weight: bold; color: #333; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.btn-photo-select:hover { background-color: #f1f1f1; }
+
+.form-footer { border-top: 1px dotted #ccc; padding-top: 24px; display: flex; justify-content: flex-end; gap: 12px; }
+.btn { padding: 10px 20px; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; }
+.btn-outline { background-color: #fff; border: 1px solid #ddd; color: #333; }
+.btn-primary { background-color: #2b4a3a; border: none; color: #fff; }
+.btn-primary:hover { background-color: #1f372b; }

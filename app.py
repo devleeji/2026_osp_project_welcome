@@ -70,13 +70,38 @@ def reg_items():
 
 
 # 리뷰 등록 - 담당: 황보희 (로그인 체크: 이지원)
-@app.route("/reg_reviews")
-def reg_reviews():
+@app.route("/reg_reviews/<item_id>")
+def reg_reviews(item_id):
     if 'id' not in session:
         flash("로그인이 필요합니다.")
         return redirect(url_for('login'))
-    return render_template("reg_reviews.html")
+    item = DB.get_item_by_id(item_id)
+    if item is None:
+        flash("상품을 찾을 수 없습니다.")
+        return redirect(url_for('view_list'))
+    
+    return render_template("reg_reviews.html", item_id=item_id, item=item)
 
+# 리뷰 등록 POST
+@app.route("/reg_review_post/<item_id>", methods=['POST'])
+def reg_review_post(item_id):
+    item = DB.get_item_by_id(item_id)
+    product_name = item.get('product_name') if item else "알 수 없는 상품"
+    
+    user_id = session.get('id', 'guest') 
+    
+    data = request.form
+    file = request.files.get('picture')
+    filename = ''
+    
+    if file and file.filename != '':
+        filename = file.filename
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        
+    DB.insert_review(data, item_id, product_name, filename, user_id)
+    
+    return redirect(url_for('view_review'))
 
 # 상품 등록 POST 처리 + result.html - 담당: 이지원
 @app.route("/result", methods=['POST'])
