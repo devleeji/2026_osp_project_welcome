@@ -92,12 +92,16 @@ class DBhandler:
         return dict(items) if items else {}
 
     # 상품 목록 + 좋아요 수 (like 노드를 한 번만 읽어서 상품마다 like_count를 붙임)
-    def get_items_with_likes(self):
+    # user_id를 주면 그 사용자가 좋아요 했는지(liked)도 붙임
+    def get_items_with_likes(self, user_id=None):
         items = self.get_items()
         likes = self.db.child("like").get().val() or {}
         for item_id, item in items.items():
             item_likes = likes.get(item_id) or {}
-            item["like_count"] = len(item_likes) if isinstance(item_likes, dict) else 0
+            if not isinstance(item_likes, dict):
+                item_likes = {}
+            item["like_count"] = len(item_likes)
+            item["liked"] = bool(user_id) and bool(item_likes.get(user_id))
         return items
 
     # ===== 상품 상세 =====

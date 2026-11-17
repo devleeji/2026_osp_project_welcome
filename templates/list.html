@@ -422,7 +422,9 @@
                     <span class="product-list-image-placeholder">이미지 없음</span>
                     {% endif %}
                 </a>
-                <button class="product-list-like-button" type="button" aria-label="{{ item_name }} 찜하기" aria-pressed="false">
+                <button class="product-list-like-button" type="button" aria-label="{{ item_name }} 좋아요"
+                        aria-pressed="{{ 'true' if item.liked else 'false' }}"
+                        data-url="{{ url_for('like', item_id=item_key) }}" data-login-url="{{ url_for('login') }}">
                     <svg class="product-list-symbol product-list-heart" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path>
                     </svg>
@@ -437,7 +439,7 @@
                     {% if item.like_count is defined %}
                     <button class="product-list-likes" type="button" aria-label="{{ item_name }} 좋아요 {{ item.like_count }}개">
                         <svg class="product-list-inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path></svg>
-                        {{ item.like_count }}
+                        <span class="product-list-like-count">{{ item.like_count }}</span>
                     </button>
                     {% endif %}
                 </div>
@@ -596,10 +598,27 @@
             document.querySelector(".product-list-controls").scrollIntoView({ behavior: "smooth", block: "start" });
         });
 
+        // 하트 = 좋아요 (상세 페이지와 같은 /like/<item_id> 사용, 새로고침 없이 하트와 숫자만 갱신)
         document.querySelectorAll(".product-list-like-button").forEach(button => {
-            button.addEventListener("click", () => {
-                const pressed = button.getAttribute("aria-pressed") === "true";
-                button.setAttribute("aria-pressed", String(!pressed));
+            button.addEventListener("click", async () => {
+                button.disabled = true;
+                try {
+                    const res = await fetch(button.dataset.url, { method: "POST" });
+                    if (res.status === 401) {
+                        alert("로그인 후 좋아요를 누를 수 있어요.");
+                        window.location.href = button.dataset.loginUrl;
+                        return;
+                    }
+                    if (!res.ok) throw new Error("request failed");
+                    const data = await res.json();
+                    button.setAttribute("aria-pressed", String(data.liked));
+                    const count = button.closest("article").querySelector(".product-list-like-count");
+                    if (count) count.textContent = data.count;
+                } catch (e) {
+                    alert("좋아요 처리 중 문제가 생겼어요. 잠시 후 다시 시도해 주세요.");
+                } finally {
+                    button.disabled = false;
+                }
             });
         });
 
