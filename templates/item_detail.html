@@ -38,10 +38,16 @@
             <div class="product-actions">
                 <a class="btn btn-primary action-btn" href="mailto:{{ item.email }}?subject={{ item.product_name | urlencode }}%20구매%20문의">구매</a>
                 <a class="btn action-btn secondary" href="{{ url_for('view_review') }}">리뷰 보기</a>
-                <button class="btn btn-outline action-btn" type="button" disabled title="찜하기 기능 준비 중">찜하기</button>
+                <button id="like-btn" class="btn btn-outline action-btn like-btn{% if liked %} liked{% endif %}" type="button"
+                        data-url="{{ url_for('like', item_id=item_id) }}" data-login-url="{{ url_for('login') }}"
+                        aria-pressed="{{ 'true' if liked else 'false' }}">
+                    <span class="like-icon">{{ '♥' if liked else '♡' }}</span>
+                    좋아요 <span id="like-count">{{ like_count }}</span>
+                </button>
             </div>
             <p class="pickup-note">본 상품의 문의는 판매자에게 연락해 주세요.</p>
         </section>
     </div>
 </div>
+<script src="{{ url_for('static', filename='js/like.js') }}"></script>
 {% endblock %}

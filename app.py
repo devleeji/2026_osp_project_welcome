@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import hashlib
 from datetime import timedelta
 
@@ -153,8 +153,19 @@ def detail(item_id):
     return render_template(
         "item_detail.html",
         item=item,
-        item_id=item_id
+        item_id=item_id,
+        liked=DB.is_liked(item_id, session.get('id')),
+        like_count=DB.get_like_count(item_id)
     )
+
+# 좋아요 (AJAX) - 담당: 장예희
+# 누를 때마다 좋아요 <-> 취소, 페이지 새로고침 없이 JSON으로 결과만 돌려줌
+@app.route("/like/<item_id>", methods=['POST'])
+def like(item_id):
+    if not session.get('id'):
+        return jsonify({"error": "login_required"}), 401
+    liked = DB.toggle_like(item_id, session['id'])
+    return jsonify({"liked": liked, "count": DB.get_like_count(item_id)})
 
 if __name__ == "__main__":
     app.run(debug=True)
