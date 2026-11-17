@@ -25,7 +25,8 @@ class DBhandler:
             "email": data['email'],
             "img_path": img_path,
             "category": data.get('category', ''),
-            "description": data.get('description', '')
+            "description": data.get('description', ''),
+            "opening_hours": data.get('opening_hours', '')
         }
         result = self.db.child("item").push(item_info)
         item_id = result["name"]  # Firebase가 만든 고유 키
@@ -89,6 +90,15 @@ class DBhandler:
     def get_items(self):
         items = self.db.child("item").get().val()
         return dict(items) if items else {}
+
+    # 상품 목록 + 좋아요 수 (like 노드를 한 번만 읽어서 상품마다 like_count를 붙임)
+    def get_items_with_likes(self):
+        items = self.get_items()
+        likes = self.db.child("like").get().val() or {}
+        for item_id, item in items.items():
+            item_likes = likes.get(item_id) or {}
+            item["like_count"] = len(item_likes) if isinstance(item_likes, dict) else 0
+        return items
 
     # ===== 상품 상세 =====
     # item_id로 상품 하나 조회 (없으면 None)
