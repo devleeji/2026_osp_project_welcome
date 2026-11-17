@@ -36,9 +36,12 @@
                 <p>{{ item.description|default('등록된 설명이 없습니다.', true) }}</p>
             </div>
             <div class="product-actions">
-                <a class="btn btn-primary action-btn" href="mailto:{{ item.email }}?subject={{ item.product_name | urlencode }}%20구매%20문의">구매</a>
+                <a class="btn action-btn btn-primary " href="mailto:{{ item.email }}?subject={{ item.product_name | urlencode }}%20구매%20문의">구매</a>
                 <a class="btn action-btn secondary" href="{{ url_for('view_review') }}">리뷰 보기</a>
-                <button id="like-btn" class="btn btn-outline action-btn like-btn{% if liked %} liked{% endif %}" type="button"
+                <a class="btn action-btn secondary" href="{{ url_for('reg_reviews', item_id=item_id) }}">리뷰 쓰기</a>
+            </div>
+            <div style="margin-top: 10px;">
+                <button id="like-btn" class="btn btn-outline action-btn btn-block like-btn{% if liked %} liked{% endif %}" type="button"
                         data-url="{{ url_for('like', item_id=item_id) }}" data-login-url="{{ url_for('login') }}"
                         aria-pressed="{{ 'true' if liked else 'false' }}">
                     <span class="like-icon">{{ '♥' if liked else '♡' }}</span>
