@@ -56,10 +56,6 @@ def view_list():
 def view_review():
     return render_template("review.html")
 
-@app.route('/review_detail')
-def review_detail():
-    return render_template('review_detail.html')
-
 # 상품 등록 - 담당: 이다은 (로그인 체크: 이지원)
 @app.route("/reg_items")
 def reg_items():
@@ -102,6 +98,24 @@ def reg_review_post(item_id):
     DB.insert_review(data, item_id, product_name, filename, user_id)
     
     return redirect(url_for('view_review'))
+
+# 리뷰 상세 - 담당 : 황보희
+@app.route('/review_detail/<review_id>')
+def review_detail(review_id):
+    review = DB.get_review_by_id(review_id)
+    if review is None:
+        flash("리뷰를 찾을 수 없습니다.")
+        return redirect(url_for('view_review'))
+
+    item_id = review.get('item_id')
+    item = DB.get_item_by_id(item_id) if item_id else {}
+
+    return render_template(
+        'review_detail.html',
+        review=review,
+        item=item or {},
+        review_id=review_id
+    )
 
 # 상품 등록 POST 처리 + result.html - 담당: 이지원
 @app.route("/result", methods=['POST'])
