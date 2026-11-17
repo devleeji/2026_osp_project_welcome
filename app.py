@@ -86,7 +86,7 @@ def result():
         return redirect(url_for('login'))
     if request.method == 'POST':
         product_name = request.form.get('product_name')
-        seller_id = request.form.get('seller_id')
+        seller_id = session['id']  # 1. 로그인한 아이디로 자동 지정
         price = request.form.get('price')
         address = request.form.get('address')
         status = request.form.get('status')
@@ -99,7 +99,10 @@ def result():
             os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         
-        DB.insert_item(product_name, request.form, "static/images/" + filename)
+        # 2. DB에 저장할 데이터에도 로그인한 아이디를 덮어씌움
+        form_data = request.form.to_dict()
+        form_data['seller_id'] = seller_id
+        DB.insert_item(product_name, form_data, "static/images/" + filename)
 
         return render_template(
             "result.html",
@@ -146,10 +149,30 @@ def mypage():
 
     my_id = session['id']
     user = DB.get_user(my_id)
-    # 판매자 ID를 '@아이디'로 적은 경우도 내 상품으로 인식
-    my_items = {item_id: item for item_id, item in DB.get_items().items()
+    all_items = DB.get_items()
+
+    # 1. 내가 등록한 상품
+    my_items = {item_id: item for item_id, item in all_items.items()
                 if str(item.get('seller_id', '')).lstrip('@') == my_id}
-    return render_template("mypage.html", user=user, my_items=my_items)
+
+    # 2. 내가 작성한 리뷰 (리뷰 DB 함수 병합 전 에러 방지 처리)
+    all_reviews = DB.get_reviews() if hasattr(DB, 'get_reviews') else {}
+    my_reviews = {
+        rev_id: rev for rev_id, rev in (all_reviews or {}).items()
+        if str(rev.get('writer_id') or rev.get('user_id') or rev.get('id', '')).lstrip('@') == my_id
+    }
+
+    # 3. 좋아요 목록
+    liked_items = {item_id: item for item_id, item in all_items.items()
+                if DB.is_liked(item_id, my_id)}
+
+    return render_template(
+        "mypage.html",
+        user=user,
+        my_items=my_items,
+        my_reviews=my_reviews,
+        liked_items=liked_items
+    )
 
 # 상품 상세 - 담당: 이다은
 @app.route("/detail/<item_id>")

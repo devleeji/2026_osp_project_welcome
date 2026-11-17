@@ -1,7 +1,7 @@
 {% extends "index.html" %}
 {# 마이페이지 - 담당: 이지원 
    내가 등록한 상품: Firebase item 중 seller_id가 로그인한 아이디와 같은 것
-   내 리뷰 / 찜 목록: 리뷰·좋아요 기능이 연결되면 채움 #}
+   내 리뷰 / 좋아요 목록: 리뷰·좋아요 기능이 연결되면 채움 #}
 {% block title %}마이페이지 · 이화대동제{% endblock %}
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
@@ -51,12 +51,52 @@
 </section>
 
 <section class="mypage-section">
-    <h2 class="section-title">내 리뷰</h2>
-    <div class="empty-box">내가 작성한 리뷰 표시</div>
+    <h2 class="section-title">내 리뷰 <span class="section-count">{{ my_reviews | length }}개</span></h2>
+    {% if my_reviews %}
+    <div class="my-items">
+        {% for rev_id, rev in my_reviews.items() %}
+        <div class="my-item">
+            {% if rev.img_path and rev.img_path != 'static/images/' %}
+            <div class="my-item-image">
+                <img src="{{ url_for('static', filename=rev.img_path.replace('static/', '', 1)) }}" alt="{{ rev.title }}" onerror="this.remove()">
+            </div>
+            {% endif %}
+            <p class="my-item-name">{{ rev.title or rev.product_name or '작성한 리뷰' }}</p>
+            <p class="my-item-meta">{{ rev.product_name }}{% if rev.rate %} · ⭐ {{ rev.rate }}{% endif %}</p>
+            <span class="tag">리뷰</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-box">
+        <p>아직 작성한 리뷰가 없어요.</p>
+        <a href="{{ url_for('view_list') }}" class="btn btn-outline btn-sm">상품 둘러보기</a>
+    </div>
+    {% endif %}
 </section>
 
 <section class="mypage-section">
-    <h2 class="section-title">찜 목록</h2>
-    <div class="empty-box">찜한 상품 표시</div>
+    <h2 class="section-title">좋아요 목록 <span class="section-count">{{ liked_items | length }}개</span></h2>
+    {% if liked_items %}
+    <div class="my-items">
+        {% for item_id, item in liked_items.items() %}
+        <a class="my-item" href="{{ url_for('detail', item_id=item_id) }}">
+            <div class="my-item-image">
+                {% if item.img_path and item.img_path != 'static/images/' %}
+                <img src="{{ url_for('static', filename=item.img_path.replace('static/', '', 1)) }}" alt="{{ item.product_name }}" onerror="this.remove()">
+                {% endif %}
+            </div>
+            <p class="my-item-name">{{ item.product_name }}</p>
+            <p class="my-item-meta">₩{{ item.price }} · {{ item.address }}</p>
+            <span class="tag">{{ item.status }}</span>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-box">
+        <p>아직 좋아요한 상품이 없어요.</p>
+        <a href="{{ url_for('view_list') }}" class="btn btn-outline btn-sm">상품 둘러보기</a>
+    </div>
+    {% endif %}
 </section>
 {% endblock %}
