@@ -142,6 +142,8 @@
         gap: 32px 24px;
     }
     .product-list-card {
+        position: relative;
+        isolation: isolate;
         width: 100%;
         min-height: 350px;
         overflow: hidden;
@@ -154,20 +156,11 @@
 
     .product-list-image-area {
         position: relative;
-        width: 100%;
-        aspect-ratio: 302 / 228;
-    }
-    .product-list-image-link {
-        display: block;
         overflow: hidden;
         width: 100%;
-        height: 100%;
+        aspect-ratio: 302 / 228;
         border-radius: 10px;
         background: #edf2ef;
-    }
-    .product-list-image-link:focus-visible {
-        outline: 3px solid var(--product-list-green);
-        outline-offset: 3px;
     }
     .product-list-image {
         width: 100%;
@@ -176,11 +169,12 @@
         object-position: center;
         transition: transform 180ms ease;
     }
-    .product-list-image-link:hover .product-list-image { transform: scale(1.03); }
+    .product-list-card:hover .product-list-image { transform: scale(1.03); }
     .product-list-like-button {
         position: absolute;
         top: 12px;
         right: 12px;
+        z-index: 2;
         display: grid;
         width: 34px;
         height: 34px;
@@ -244,6 +238,24 @@
         line-height: 28px;
         text-overflow: ellipsis;
         white-space: nowrap;
+    }
+    .product-list-card-link {
+        color: inherit;
+        text-decoration: none;
+    }
+    .product-list-card-link::after {
+        position: absolute;
+        z-index: 1;
+        inset: 0;
+        border-radius: inherit;
+        content: "";
+    }
+    .product-list-card-link:focus-visible {
+        outline: none;
+    }
+    .product-list-card-link:focus-visible::after {
+        outline: 3px solid var(--product-list-green);
+        outline-offset: -3px;
     }
     .product-list-info .product-list-seller {
         margin-bottom: 1px;
@@ -325,7 +337,7 @@
 
     @media (prefers-reduced-motion: reduce) {
         .product-list-image { transition: none; }
-        .product-list-image-link:hover .product-list-image { transform: none; }
+        .product-list-card:hover .product-list-image { transform: none; }
     }
 </style>
 
@@ -415,13 +427,11 @@
             data-price="{{ item.price|default(0, true) }}"
         >
             <div class="product-list-image-area">
-                <a class="product-list-image-link" href="/detail/{{ item_key|urlencode }}" aria-label="{{ item_name }} 상세 보기">
-                    {% if item.img_path %}
-                    <img class="product-list-image" src="{{ url_for('static', filename=item.img_path.replace('static/', '', 1)) }}" alt="{{ item_name }}">
-                    {% else %}
-                    <span class="product-list-image-placeholder">이미지 없음</span>
-                    {% endif %}
-                </a>
+                {% if item.img_path %}
+                <img class="product-list-image" src="{{ url_for('static', filename=item.img_path.replace('static/', '', 1)) }}" alt="{{ item_name }}">
+                {% else %}
+                <span class="product-list-image-placeholder">이미지 없음</span>
+                {% endif %}
                 <button class="product-list-like-button" type="button" aria-label="{{ item_name }} 좋아요"
                         aria-pressed="{{ 'true' if item.liked else 'false' }}"
                         data-url="{{ url_for('like', item_id=item_key) }}" data-login-url="{{ url_for('login') }}">
@@ -437,13 +447,13 @@
                         {% if item.address %}<span class="tag product-list-badge">{{ item_address }}</span>{% endif %}
                     </div>
                     {% if item.like_count is defined %}
-                    <button class="product-list-likes" type="button" aria-label="{{ item_name }} 좋아요 {{ item.like_count }}개">
+                    <span class="product-list-likes" aria-label="{{ item_name }} 좋아요 {{ item.like_count }}개">
                         <svg class="product-list-inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path></svg>
                         <span class="product-list-like-count">{{ item.like_count }}</span>
-                    </button>
+                    </span>
                     {% endif %}
                 </div>
-                <h3 class="product-list-name">{{ item_name }}</h3>
+                <h3 class="product-list-name"><a class="product-list-card-link" href="/detail/{{ item_key|urlencode }}">{{ item_name }}</a></h3>
                 {% if item.seller_id %}<p class="product-list-seller">@{{ item.seller_id }}</p>{% endif %}
                 {% if item.opening_hours %}
                 <p class="product-list-hours">
