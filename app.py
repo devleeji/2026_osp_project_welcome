@@ -60,21 +60,30 @@ def view_review():
 def review_detail():
     return render_template('review_detail.html')
 
-# 상품 등록 - 담당: 이다은
+# 상품 등록 - 담당: 이다은 (로그인 체크: 이지원)
 @app.route("/reg_items")
 def reg_items():
+    if 'id' not in session:
+        flash("로그인이 필요합니다.")
+        return redirect(url_for('login'))
     return render_template("reg_items.html")
 
 
-# 리뷰 등록 - 담당: 황보희
+# 리뷰 등록 - 담당: 황보희 (로그인 체크: 이지원)
 @app.route("/reg_reviews")
 def reg_reviews():
+    if 'id' not in session:
+        flash("로그인이 필요합니다.")
+        return redirect(url_for('login'))
     return render_template("reg_reviews.html")
 
 
 # 상품 등록 POST 처리 + result.html - 담당: 이지원
 @app.route("/result", methods=['POST'])
 def result():
+    if 'id' not in session:
+        flash("로그인이 필요합니다.")
+        return redirect(url_for('login'))
     if request.method == 'POST':
         product_name = request.form.get('product_name')
         seller_id = request.form.get('seller_id')
