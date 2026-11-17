@@ -102,3 +102,55 @@ class DBhandler:
             if item.get("product_name", item_id) == name:
                 return item
         return None
+
+    # ===== 리뷰 작성 (10 실습) =====
+    # data: 폼 입력값 (title, content, rating) / item_id, product_name: 리뷰 대상 상품
+    # img_filename: 서버에 저장한 사진 파일 이름 (사진 없으면 "")
+    # 반환값: 새로 만들어진 review_id (Firebase 자동 키)
+    def insert_review(self, data, item_id, product_name, img_filename, user_id):
+        review_info = {
+            "title": data['title'],
+            "content": data['content'],
+            "rating": data['rating'],
+            "item_id": item_id,
+            "product_name": product_name,
+            "img_filename": img_filename,
+            "user_id": user_id
+        }
+        result = self.db.child("review").push(review_info)
+        review_id = result["name"]
+        print(review_id, review_info)
+        return review_id
+
+    # ===== 리뷰 목록 =====
+    # {review_id: {title, content, rating, item_id, product_name, img_filename, user_id}} 반환
+    def get_reviews(self):
+        reviews = self.db.child("review").get().val()
+        return dict(reviews) if reviews else {}
+
+    # ===== 리뷰 상세 =====
+    # review_id로 리뷰 하나 조회 (없으면 None)
+    def get_review_by_id(self, review_id):
+        return self.db.child("review").child(review_id).get().val()
+
+    # ===== 좋아요 (10 실습) =====
+    # DB 구조: like / item_id / user_id : true
+    # 이미 좋아요면 취소, 아니면 좋아요. 반환값: 바뀐 뒤 좋아요 상태 (True/False)
+    def toggle_like(self, item_id, user_id):
+        ref = self.db.child("like").child(item_id).child(user_id)
+        if ref.get().val():
+            ref.remove()
+            return False
+        ref.set(True)
+        return True
+
+    # 이 사용자가 이 상품에 좋아요를 눌렀는지 (True/False)
+    def is_liked(self, item_id, user_id):
+        if not user_id:
+            return False
+        return bool(self.db.child("like").child(item_id).child(user_id).get().val())
+
+    # 이 상품의 좋아요 수
+    def get_like_count(self, item_id):
+        likes = self.db.child("like").child(item_id).get().val()
+        return len(likes) if likes else 0
