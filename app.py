@@ -51,10 +51,50 @@ def view_list():
     return render_template("list.html", items=DB.get_items_with_likes(session.get('id')))
 
 
-# 리뷰 목록 - 담당: 양설아
+# 리뷰 목록 - 담당: 양설아 (데이터 연동 및 페이지네이션: 이지원)
 @app.route("/review")
 def view_review():
-    return render_template("review.html")
+    page = request.args.get('page', 1, type=int)
+    per_page = 4  # 2x2 레이아웃, 한 페이지당 4개
+
+    all_reviews_dict = DB.get_reviews() or {}
+    # 최신 작성 리뷰가 1페이지에 먼저 보이도록 역순 정렬
+    all_reviews = list(all_reviews_dict.items())[::-1]
+
+    total_reviews = len(all_reviews)
+    total_pages = max(1, (total_reviews + per_page - 1) // per_page)
+    page = max(1, min(page, total_pages))
+
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_reviews = all_reviews[start:end]
+
+    # 상단 요약 박스용 실제 DB 별점 통계 계산
+    rating_counts = {5: 0, 4: 0, 3: 0, 2: 0, 1: 0}
+    rating_sum = 0
+    for _, rev in all_reviews:
+        try:
+            r = int(float(rev.get('rating', 0)))
+        except (ValueError, TypeError):
+            r = 0
+        if 1 <= r <= 5:
+            rating_counts[r] += 1
+            rating_sum += r
+
+    avg_rating = round(rating_sum / total_reviews, 1) if total_reviews > 0 else 0.0
+
+    return render_template(
+        "review.html",
+        reviews=paginated_reviews,
+        page=page,
+        total_pages=total_pages,
+        total_reviews=total_reviews,
+        per_page=per_page,
+        start_idx=start + 1 if total_reviews > 0 else 0,
+        end_idx=min(end, total_reviews),
+        avg_rating=avg_rating,
+        rating_counts=rating_counts
+    )
 
 # 상품 등록 - 담당: 이다은 (로그인 체크: 이지원)
 @app.route("/reg_items")
@@ -78,13 +118,17 @@ def reg_reviews(item_id):
     
     return render_template("reg_reviews.html", item_id=item_id, item=item)
 
-# 리뷰 등록 POST
+# 리뷰 등록 POST (로그인 체크: 이지원)
 @app.route("/reg_review_post/<item_id>", methods=['POST'])
 def reg_review_post(item_id):
+    if 'id' not in session:
+        flash("로그인이 필요합니다.")
+        return redirect(url_for('login'))
+    
     item = DB.get_item_by_id(item_id)
     product_name = item.get('product_name') if item else "알 수 없는 상품"
     
-    user_id = session.get('id', 'guest') 
+    user_id = session['id'] 
     
     data = request.form
     file = request.files.get('picture')
