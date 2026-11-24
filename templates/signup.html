@@ -27,9 +27,10 @@
         <label for="id">아이디 <span class="required">*</span></label>
         <div class="input-with-btn">
             <input type="text" id="id" name="id" placeholder="아이디를 입력하세요" required>
-            {# 중복 확인 기능(AJAX)은 다음 단계에서 연결 — 지금은 가입 버튼을 누르면 서버에서 중복 검사 #}
-            <button type="button" class="btn btn-outline btn-check">중복 확인</button>
+            {# 중복 확인 (AJAX) - 버튼을 누르면 /check_id 로 요청, 가입 버튼을 눌러도 서버에서 한 번 더 검사 #}
+            <button type="button" class="btn btn-outline btn-check" id="id-check-btn">중복 확인</button>
         </div>
+        <span class="field-hint" id="id-check-msg"></span>
     </div>
 
     <div class="form-group">
@@ -57,4 +58,50 @@
     <button type="submit" class="btn btn-primary btn-block auth-submit">회원가입</button>
     <p class="auth-switch">이미 계정이 있으신가요? <a href="{{ url_for('login') }}">로그인</a></p>
 </form>
+<script>
+// 아이디 중복 확인 (AJAX) - 담당: 이지원
+document.addEventListener("DOMContentLoaded", function () {
+    const idInput = document.getElementById("id");
+    const checkBtn = document.getElementById("id-check-btn");
+    const msg = document.getElementById("id-check-msg");
+    const form = document.querySelector(".auth-form");
+    let checkedId = null;  // 중복 확인을 통과한 아이디
+
+    function showMessage(text, ok) {
+        msg.textContent = text;
+        msg.style.color = ok ? "var(--green-700)" : "var(--danger)";
+    }
+
+    checkBtn.addEventListener("click", async function () {
+        const id = idInput.value.trim();
+        if (!id) {
+            showMessage("아이디를 입력해 주세요.", false);
+            return;
+        }
+        try {
+            const res = await fetch("{{ url_for('check_id') }}?id=" + encodeURIComponent(id));
+            const data = await res.json();
+            showMessage(data.message, data.available);
+            checkedId = data.available ? id : null;
+        } catch (e) {
+            showMessage("확인 중 문제가 생겼어요. 잠시 후 다시 시도해 주세요.", false);
+        }
+    });
+
+    // 확인한 뒤 아이디를 다시 고치면 확인을 다시 받도록 초기화
+    idInput.addEventListener("input", function () {
+        checkedId = null;
+        msg.textContent = "";
+    });
+
+    // 중복 확인을 안 했거나, 확인한 아이디와 다르면 가입 막기
+    form.addEventListener("submit", function (e) {
+        if (checkedId !== idInput.value.trim()) {
+            e.preventDefault();
+            showMessage("아이디 중복 확인을 해 주세요.", false);
+            idInput.focus();
+        }
+    });
+});
+</script>
 {% endblock %}

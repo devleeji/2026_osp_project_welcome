@@ -37,12 +37,23 @@ def register_user():
     data = request.form
     pw = request.form['pw']
     pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
-    
+
     if DB.insert_user(data, pw_hash):
-        # redirect를 사용하여 주소창을 /login으로 확실히 변경
+        flash("회원가입이 완료됐어요. 로그인해 주세요.")  
         return redirect('/login')
     else:
-        return render_template("signup.html", error="User ID already exists!")
+        return render_template("signup.html", error="이미 사용 중인 아이디예요.")   
+
+# 아이디 중복 확인 (AJAX) - 담당: 이지원
+# 회원가입 화면의 '중복 확인' 버튼이 /check_id?id=입력값 으로 요청을 보냄
+@app.route("/check_id")
+def check_id():
+    user_id = request.args.get('id', '').strip()
+    if not user_id:
+        return jsonify({"available": False, "message": "아이디를 입력해 주세요."})
+    if DB.user_duplicate_check(user_id):
+        return jsonify({"available": True, "message": "사용할 수 있는 아이디예요."})
+    return jsonify({"available": False, "message": "이미 사용 중인 아이디예요."})
 
 
 # 상품 목록 - 담당: 양설아

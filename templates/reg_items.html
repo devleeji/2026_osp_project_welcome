@@ -17,7 +17,7 @@
         </div>
         <div class="form-group">
           <label for="seller_id">판매자 ID<span class="reg-green">*</span></label>
-          <input type="text" id="seller_id" name="seller_id" required>
+          <input type="text" id="seller_id" name="seller_id" value="{{ session['id'] }}" readonly>
           <small>상품 판매글에 판매자 ID가 공개됩니다.</small>
         </div>
         <div class="field-2-1-row">

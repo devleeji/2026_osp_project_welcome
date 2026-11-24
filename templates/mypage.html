@@ -55,16 +55,16 @@
     {% if my_reviews %}
     <div class="my-items">
         {% for rev_id, rev in my_reviews.items() %}
-        <div class="my-item">
-            {% if rev.img_path and rev.img_path != 'static/images/' %}
+        <a class="my-item" href="{{ url_for('review_detail', review_id=rev_id) }}">
+            {% if rev.img_filename %}
             <div class="my-item-image">
-                <img src="{{ url_for('static', filename=rev.img_path.replace('static/', '', 1)) }}" alt="{{ rev.title }}" onerror="this.remove()">
+                <img src="{{ url_for('static', filename='images/' + rev.img_filename) }}" alt="{{ rev.title }}" onerror="this.remove()">
             </div>
             {% endif %}
             <p class="my-item-name">{{ rev.title or rev.product_name or '작성한 리뷰' }}</p>
-            <p class="my-item-meta">{{ rev.product_name }}{% if rev.rate %} · ⭐ {{ rev.rate }}{% endif %}</p>
+            <p class="my-item-meta">{{ rev.product_name }}{% if rev.rating %} · ⭐ {{ rev.rating }}{% endif %}</p>
             <span class="tag">리뷰</span>
-        </div>
+        </a>
         {% endfor %}
     </div>
     {% else %}
